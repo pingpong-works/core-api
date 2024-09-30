@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface DocsMapper {
+public interface DocsTypeMapper {
     DocumentType postDtoToDocsType(DocsTypeDto.Post postDto);
     DocumentType patchDtoToDocsType(DocsTypeDto.Patch patchDto);
     DocsTypeDto.Response docsTypeToResponse(DocumentType type);

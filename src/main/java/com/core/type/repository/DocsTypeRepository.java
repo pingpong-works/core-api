@@ -1,6 +1,6 @@
-package com.core.document;
+package com.core.type.repository;
 
-import com.springboot.type.entity.DocumentType;
+import com.core.type.entity.DocumentType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DocsTypeRepository extends JpaRepository <DocumentType, Long> {
