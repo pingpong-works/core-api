@@ -1,4 +1,4 @@
-package com.core.document;
+package com.core.type.entity;
 
 import com.core.document.entity.Document;
 import lombok.Getter;
@@ -22,5 +22,9 @@ public class DocumentType {
 
     @OneToMany(mappedBy = "documentType")
     private List<Document> documents;
+
+//    @OneToOne
+//    @JoinColumn(name = "template_id")
+//    private DocumentTemplate documentTemplate;
 
 }

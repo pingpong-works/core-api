@@ -1,13 +1,13 @@
-package com.core.document;
+package com.core.type.mapper;
 
-import com.springboot.type.dto.DocsTypeDto;
-import com.springboot.type.entity.DocumentType;
+import com.core.type.dto.DocsTypeDto;
+import com.core.type.entity.DocumentType;
 import org.mapstruct.Mapper;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public interface DocsMapper {
+public interface DocsTypeMapper {
     DocumentType postDtoToDocsType(DocsTypeDto.Post postDto);
     DocumentType patchDtoToDocsType(DocsTypeDto.Patch patchDto);
     DocsTypeDto.Response docsTypeToResponse(DocumentType type);
