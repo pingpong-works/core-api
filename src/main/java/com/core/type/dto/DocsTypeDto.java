@@ -1,6 +1,6 @@
-package com.core.document;
+package com.core.document-ty
 
-import com.springboot.document.entity.Document;
+import com.core.document.entity.Document;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

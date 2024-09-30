@@ -30,13 +30,14 @@ public class DocumentService {
     }
 
     // 전체 조회 (pagination)
-    public Page<Document> findDocuments(int page, int size, String criteria, String direction) {
+    public Page<Document> findDocuments(int page, int size /*String criteria, String direction*/) {
         Pageable pageable = PageRequest.of(page,size);
         return repository.findAll(pageable);
     }
 
     public void deleteDocument(Long documentId) {
 
+        repository.delete(findVerifiedDocument(documentId));
     }
 
     private Document findVerifiedDocument (Long documentId) {
