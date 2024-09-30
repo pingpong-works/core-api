@@ -2,6 +2,7 @@ package com.core.document.service;
 
 import com.core.document.entity.Document;
 import com.core.document.repository.DocumentRepository;
+import com.core.utils.PageableCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,11 +31,14 @@ public class DocumentService {
     }
 
     // 전체 조회 (pagination)
-    public Page<Document> findDocuments(int page, int size /*String criteria, String direction*/) {
-        Pageable pageable = PageRequest.of(page,size);
+    public Page<Document> findDocuments(int page, int size ,String criteria, String direction) {
+
+        Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
+
         return repository.findAll(pageable);
     }
 
+    // 개별 삭제
     public void deleteDocument(Long documentId) {
 
         repository.delete(findVerifiedDocument(documentId));

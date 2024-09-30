@@ -1,6 +1,6 @@
 package com.core.document.entity;
 
-import com.core.document.DocumentType;
+import com.core.type.entity.DocumentType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +25,6 @@ public class Document {
 
     @Column
     private String author;
-
 
     @Column
     private LocalDateTime createdAt = LocalDateTime.now();

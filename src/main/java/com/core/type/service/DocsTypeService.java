@@ -2,6 +2,7 @@ package com.core.type.service;
 
 import com.core.type.entity.DocumentType;
 import com.core.type.repository.DocsTypeRepository;
+import com.core.utils.PageableCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,23 +16,25 @@ public class DocsTypeService {
         this.repository = repository;
     }
 
-    public DocumentType createDocument(DocumentType docsType) {
+    public DocumentType createDocsType(DocumentType docsType) {
 
         return docsType;
     }
 
-    public DocumentType updateDocument(DocumentType docsType) {
+    public DocumentType updateDocsType(DocumentType docsType) {
         return docsType;
     }
 
     // 개별 조회
-    public DocumentType findDocument(Long typeId) {
+    public DocumentType findDocsType(Long typeId) {
         return findVerifiedDocsType(typeId);
     }
 
     // 전체 조회 (pagination)
-    public Page<DocumentType> findDocuments(int page, int size /*String criteria, String direction*/) {
-        Pageable pageable = PageRequest.of(page,size);
+    public Page<DocumentType> findDocsTypes(int page, int size , String criteria, String direction) {
+
+        Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
+
         return repository.findAll(pageable);
     }
 
