@@ -2,6 +2,7 @@ package com.core.workflow.dto;
 
 import com.core.approval.dto.ApprovalDto;
 import com.core.approval.entity.Approval;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,8 +12,7 @@ public class WorkflowDto {
 
     @Getter
     public static class Post {
-        private Long documentId;
-        private int currentStep;
+       // private Long documentId;
         private List<ApprovalDto.Post> approvals;
     }
 
@@ -25,12 +25,12 @@ public class WorkflowDto {
     }
 
     @Getter
+    @Builder
+    @Setter
     public static class Response {
-        private Long id;
-        private int approvalOrder;
-        private String approvalStatus;
-        private Long employeeId;
         private Long workflowId;
+        private int currentStep;
+        private List<ApprovalDto.Response> approvals;
     }
 
 }

@@ -1,5 +1,7 @@
 package com.core.template.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -24,6 +26,8 @@ public class FieldDto {
         private String fieldType;
     }
 
+    @AllArgsConstructor
+    @Builder
     @Getter
     public static class Response {
         private Long templateFieldId;
