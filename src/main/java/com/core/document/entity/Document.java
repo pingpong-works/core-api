@@ -1,6 +1,7 @@
 package com.core.document.entity;
 
 import com.core.type.entity.DocumentType;
+import com.core.workflow.entity.Workflow;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,8 +33,9 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private DocumentStatus documentStatus = DocumentStatus.DRAFT;
 
-    @Column
-    private Long workflowId;
+    @OneToOne
+    @JoinColumn(name = "workflow_id")
+    private Workflow workflow;
 
     @ManyToOne
     @JoinColumn(name = "document_type_id", nullable = false)

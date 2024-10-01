@@ -1,5 +1,6 @@
 package com.core.approval.entity;
 
+import com.core.workflow.entity.Workflow;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

@@ -17,10 +17,14 @@ public class ApprovalService {
         this.repository = repository;
     }
 
-    public Approval createApproval(Approval approval) {
+
+    //승인 또는 반려시
+    public Approval updateApprovalStatus(Long approvalId, Approval.ApprovalStatus status) {
+        Approval approval = findVerifiedApproval(approvalId);
+
+        approval.setApprovalStatus(status);
         return repository.save(approval);
     }
-
 
     public Approval findApproval (Long approvalId) {
         return findVerifiedApproval(approvalId);
