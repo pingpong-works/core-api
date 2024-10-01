@@ -6,11 +6,13 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 
 public class DocumentDto {
+
     @Getter
     public static class Post {
         private Long documentTypeId;
         private String title;
         private String content;
+        private String author;
     }
 
     @Getter

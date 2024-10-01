@@ -54,8 +54,8 @@ public class DocsTemplateController {
     @GetMapping
     public ResponseEntity getTemplates(@RequestParam @Positive int page,
                                        @RequestParam @Positive int size,
-                                       @RequestParam String sort,
-                                       @RequestParam String direction) {
+                                       @RequestParam(required = false) String sort,
+                                       @RequestParam(required = false) String direction) {
         String criteria = "id";
 
         if(sort != null) {
