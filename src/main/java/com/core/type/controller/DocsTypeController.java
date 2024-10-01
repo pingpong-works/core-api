@@ -7,20 +7,23 @@ import com.core.type.dto.DocsTypeDto;
 import com.core.type.entity.DocumentType;
 import com.core.type.mapper.DocsTypeMapper;
 import com.core.type.service.DocsTypeService;
+import com.core.utils.UriCreator;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Positive;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.List;
 
 @RestController
-@RequestMapping("/documents/types")
+@RequestMapping("/docs-types")
 public class DocsTypeController {
     private final DocsTypeService service;
     private final DocsTypeMapper mapper;
+    private final static String TYPE_DEFAULT_URL = "/docs-types";
 
     public DocsTypeController(DocsTypeService service, DocsTypeMapper mapper) {
         this.service = service;
@@ -30,9 +33,10 @@ public class DocsTypeController {
     @PostMapping
     public ResponseEntity postDocsType (@RequestBody DocsTypeDto.Post postDto) {
 
-        DocumentType docsType = service.createDocsType(mapper.postDtoToDocsType(postDto));
+        DocumentType docsType = service.createDocsTypeWithTemplate(mapper.postDtoToDocsType(postDto));
+        URI location = UriCreator.createUri(TYPE_DEFAULT_URL, docsType.getId());
 
-        return new ResponseEntity(mapper.docsTypeToResponse(docsType), HttpStatus.OK);
+        return ResponseEntity.created(location).build();
     }
 
     @PatchMapping("/{documentId}")

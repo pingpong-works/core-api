@@ -20,7 +20,7 @@ public class Approval {
     private int approvalOrder; //결재순서
 
     @Enumerated(EnumType.STRING)
-    private ApprovalStatus approvalStatus;
+    private ApprovalStatus approvalStatus = ApprovalStatus.PENDING;
 
     @ManyToOne
     @JoinColumn(name = "workflow_id", nullable = false)

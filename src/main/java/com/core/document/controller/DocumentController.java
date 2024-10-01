@@ -10,6 +10,7 @@ import com.core.response.MultiResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -17,6 +18,7 @@ import javax.validation.constraints.Positive;
 import java.util.Arrays;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/documents")
 public class DocumentController {

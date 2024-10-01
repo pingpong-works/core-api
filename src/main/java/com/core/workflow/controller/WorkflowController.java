@@ -32,7 +32,7 @@ public class WorkflowController {
     @PostMapping
     public ResponseEntity postWorkflow (@RequestBody WorkflowDto.Post postDto) {
 
-        Workflow createWorkflow = service.createWorkflow(mapper.postDtoToApproval(postDto));
+        Workflow createWorkflow = service.createWorkflow(mapper.postDtoToWorkflow(postDto));
 
         URI location = UriCreator.createUri(WORKFLOW_DEFAULT_URL, createWorkflow.getId());
 
@@ -43,7 +43,7 @@ public class WorkflowController {
     public ResponseEntity patchWorkflow (@PathVariable("workflow-id") @Positive Long workflowId ,
                                          @RequestBody WorkflowDto.Patch patchDto) {
         patchDto.setId(workflowId);
-        Workflow patchWorkflow = service.updateWorkflow(mapper.patchDtoToApproval(patchDto));
+        Workflow patchWorkflow = service.updateWorkflow(mapper.patchDtoToWorkflow(patchDto));
 
         return new ResponseEntity(
                 new SingleResponseDto<>(mapper.approvalToResponse(patchWorkflow)), HttpStatus.OK);

@@ -1,5 +1,7 @@
 package com.core.template.service;
 
+import com.core.exception.BusinessLogicException;
+import com.core.exception.ExceptionCode;
 import com.core.template.entity.DocumentTemplate;
 import com.core.template.repository.DocsTemplateRepository;
 import com.core.utils.PageableCreator;
@@ -17,6 +19,7 @@ public class DocsTemplateService {
     }
 
     public DocumentTemplate createTemplate(DocumentTemplate template) {
+        verifyExistsTemplateName(template.getTemplateName());
 
         return repository.save(template);
     }
@@ -46,5 +49,11 @@ public class DocsTemplateService {
     private DocumentTemplate findVerifiedTemplate(Long templateId) {
         return repository.findById(templateId)
                 .orElseThrow(() -> new RuntimeException("Template not found"));
+    }
+
+    private void verifyExistsTemplateName (String templateName) {
+        if(repository.existsByTemplateName(templateName)) {
+            throw new BusinessLogicException(ExceptionCode.TEMPLATE_NAME_ALREADY_EXISTS);
+        }
     }
 }

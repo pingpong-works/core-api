@@ -2,17 +2,17 @@ package com.core.document.entity;
 
 import com.core.type.entity.DocumentType;
 import com.core.workflow.entity.Workflow;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@NoArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
+@AllArgsConstructor
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,14 +28,19 @@ public class Document {
     private String author;
 
     @Column
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private DocumentStatus documentStatus = DocumentStatus.DRAFT;
 
     @OneToOne
     @JoinColumn(name = "workflow_id")
     private Workflow workflow;
+
+    @Column(columnDefinition = "json")
+    private String customFields;
 
     @ManyToOne
     @JoinColumn(name = "document_type_id", nullable = false)

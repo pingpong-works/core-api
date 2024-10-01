@@ -1,24 +1,30 @@
 package com.core.type.service;
 
+import com.core.exception.BusinessLogicException;
+import com.core.exception.ExceptionCode;
+import com.core.template.entity.DocumentTemplate;
+import com.core.template.service.DocsTemplateService;
 import com.core.type.entity.DocumentType;
 import com.core.type.repository.DocsTypeRepository;
 import com.core.utils.PageableCreator;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class DocsTypeService {
     private final DocsTypeRepository repository;
+    private final DocsTemplateService docsTemplateService;
 
-    public DocsTypeService(DocsTypeRepository repository) {
-        this.repository = repository;
-    }
 
-    public DocumentType createDocsType(DocumentType docsType) {
+    public DocumentType createDocsTypeWithTemplate(DocumentType docsType) {
 
-        return docsType;
+        // template 존재하는지 검증
+        docsTemplateService.findTemplate(docsType.getDocumentTemplate().getId());
+
+        return repository.save(docsType);
     }
 
     public DocumentType updateDocsType(DocumentType docsType) {
@@ -45,7 +51,7 @@ public class DocsTypeService {
 
     private DocumentType findVerifiedDocsType (Long typeId) {
         return repository.findById(typeId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DOCS_TYPE_NOT_FOUND));
     }
 
 }
