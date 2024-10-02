@@ -1,14 +1,13 @@
 package com.core.document.dto;
 
-import com.core.approval.dto.ApprovalDto;
 import com.core.document.entity.Document;
-import com.core.template.dto.FieldDto;
 import com.core.type.dto.DocsTypeDto;
 import com.core.workflow.dto.WorkflowDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Map;
+
 
 public class DocumentDto {
 
@@ -20,6 +19,7 @@ public class DocumentDto {
         private String title;
         private String content;
         private String author;
+        private Map<String,Object> customFields;
     }
 
     @Getter
@@ -41,7 +41,7 @@ public class DocumentDto {
         private String content;
         private LocalDateTime createdAt;
         private Document.DocumentStatus documentStatus;
-
+        private Map<String,Object> customFields;
         //docsTemplate
         private DocsTypeDto.Response docsTypes;
 
