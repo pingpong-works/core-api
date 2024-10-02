@@ -31,9 +31,9 @@ public interface DocumentMapper {
         document.title(postDto.getTitle());
         document.content(postDto.getContent());
         document.author(postDto.getAuthor());
+        document.customFields(postDto.getCustomFields());
         return document.build();
     }
-    Document patchDtoToDocument(DocumentDto.Patch patchDto);
 
     default DocumentDto.Response documentToResponse(Document document) {
         // Document 기본 정보 설정
@@ -44,6 +44,7 @@ public interface DocumentMapper {
                 .createdAt(document.getCreatedAt())
                 .title(document.getTitle())
                 .content(document.getContent())
+                .customFields(document.getCustomFields())
                 .build();
 
         // DocsTypeDto 설정
@@ -89,6 +90,9 @@ public interface DocumentMapper {
 
         return response;
     }
+
+
+    Document patchDtoToDocument(DocumentDto.Patch patchDto);
 
     List<DocumentDto.Response> documentsToResponses(List<Document> documents);
 }

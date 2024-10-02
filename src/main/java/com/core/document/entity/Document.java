@@ -1,11 +1,13 @@
 package com.core.document.entity;
 
 import com.core.type.entity.DocumentType;
+import com.core.utils.MapToConverter;
 import com.core.workflow.entity.Workflow;
 import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Builder
 @Getter
@@ -39,8 +41,9 @@ public class Document {
     @JoinColumn(name = "workflow_id")
     private Workflow workflow;
 
+    @Convert(converter = MapToConverter.class)
     @Column(columnDefinition = "json")
-    private String customFields;
+    private Map<String, Object> customFields;
 
     @ManyToOne
     @JoinColumn(name = "document_type_id", nullable = false)
