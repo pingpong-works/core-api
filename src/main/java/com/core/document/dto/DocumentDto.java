@@ -18,7 +18,7 @@ public class DocumentDto {
         private Long workflowId;
         private String title;
         private String content;
-        private String author;
+        private Long employeeId;
         private Map<String,Object> customFields;
     }
 
@@ -37,6 +37,7 @@ public class DocumentDto {
     public static class Response {
         private Long id;
         private String author;
+        private String departmentName;
         private String title;
         private String content;
         private LocalDateTime createdAt;

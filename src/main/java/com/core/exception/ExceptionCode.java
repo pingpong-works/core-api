@@ -15,7 +15,8 @@ public enum ExceptionCode {
     APPROVAL_PERMISSION_DENIED(403,"You do not have approval permissions" ),
     DOCUMENT_HAS_BEEN_FINALIZED(409,"The document has been finalized" ),
     DOCUMENT_HAS_BEEN_REJECTED(409,"The document has been rejected" ),
-    DOCUMENT_NOT_FOUND(404, "Document Not Found" );
+    DOCUMENT_NOT_FOUND(404, "Document Not Found" ),
+    EMPLOYEE_NOT_FOUND(404, "Employee Not Found" );
 
     @Getter
     private int status;

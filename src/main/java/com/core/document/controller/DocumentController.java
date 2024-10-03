@@ -1,5 +1,6 @@
 package com.core.document.controller;
 
+import com.core.client.auth.EmployeeDto;
 import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.document.mapper.DocumentMapper;

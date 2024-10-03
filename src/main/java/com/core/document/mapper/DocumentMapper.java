@@ -1,6 +1,7 @@
 package com.core.document.mapper;
 
 import com.core.approval.dto.ApprovalDto;
+import com.core.client.auth.EmployeeDto;
 import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.template.dto.DocsTemplateDto;
@@ -28,7 +29,7 @@ public interface DocumentMapper {
         document.workflow(workflow);
         document.title(postDto.getTitle());
         document.content(postDto.getContent());
-        document.author(postDto.getAuthor());
+        document.employeeId(postDto.getEmployeeId());
         document.customFields(postDto.getCustomFields());
         return document.build();
     }
@@ -38,6 +39,7 @@ public interface DocumentMapper {
         DocumentDto.Response response = DocumentDto.Response.builder()
                 .id(document.getId())
                 .author(document.getAuthor())
+                .departmentName(document.getDepartmentName())
                 .documentStatus(document.getDocumentStatus())
                 .createdAt(document.getCreatedAt())
                 .title(document.getTitle())

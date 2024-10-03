@@ -27,6 +27,12 @@ public class Document {
     private String content;
 
     @Column
+    private Long employeeId;
+
+    @Column
+    private String departmentName;
+
+    @Column
     private String author;
 
     @Column
