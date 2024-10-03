@@ -2,6 +2,8 @@ package com.core.workflow.service;
 
 import com.core.approval.entity.Approval;
 import com.core.approval.repository.ApprovalRepository;
+import com.core.client.auth.AuthServiceClient;
+import com.core.client.auth.EmployeeDto;
 import com.core.document.entity.Document;
 import com.core.document.service.DocumentService;
 import com.core.exception.BusinessLogicException;
@@ -21,11 +23,13 @@ public class WorkflowService {
     private final WorkflowRepository workflowRepository;
     private final ApprovalRepository approvalRepository;
     private final DocumentService documentService;
+    private final AuthServiceClient authServiceClient;
 
-    public WorkflowService(WorkflowRepository workflowRepository, ApprovalRepository approvalRepository, DocumentService documentService) {
+    public WorkflowService(WorkflowRepository workflowRepository, ApprovalRepository approvalRepository, DocumentService documentService, AuthServiceClient authServiceClient) {
         this.workflowRepository = workflowRepository;
         this.approvalRepository = approvalRepository;
         this.documentService = documentService;
+        this.authServiceClient = authServiceClient;
     }
 
     public Workflow createWorkflow(Workflow workflow) {
@@ -33,6 +37,10 @@ public class WorkflowService {
         Set<Long> employeeIds = new HashSet<>();
 
         workflow.getApprovals().forEach(approval -> {
+
+            //존재하는 직원인지 확인
+            verifiedMember(approval.getEmployeeId());
+
             if (!employeeIds.add(approval.getEmployeeId())) {
                 System.out.println("승인자 중복 : " + approval.getEmployeeId());
                 throw new BusinessLogicException(ExceptionCode.EMPLOYEE_IN_APPROVAL_IS_DUPLICATE);
@@ -162,5 +170,17 @@ public class WorkflowService {
         }
 
         documentService.updateDocument(document);
+    }
+
+    public EmployeeDto getEmployee (Long employeeId) {
+        return authServiceClient.getEmployeeById(employeeId);
+    }
+
+    //검증된 회원인지 확인
+    private void verifiedMember (Long employeeId) {
+        EmployeeDto employee = getEmployee(employeeId);
+        if (employee == null) {
+            throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
+        }
     }
 }
