@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class DocsTypeService {
@@ -22,13 +24,24 @@ public class DocsTypeService {
     public DocumentType createDocsTypeWithTemplate(DocumentType docsType) {
 
         // template 존재하는지 검증
-        docsTemplateService.findTemplate(docsType.getDocumentTemplate().getId());
+        DocumentTemplate findDocsTemplate = docsTemplateService
+                .findTemplate(docsType.getDocumentTemplate().getId());
+        docsType.setDocumentTemplate(findDocsTemplate);
 
         return repository.save(docsType);
     }
 
     public DocumentType updateDocsType(DocumentType docsType) {
-        return docsType;
+        DocumentType findDocsType = findVerifiedDocsType(docsType.getId());
+
+        //결재 문서 변경
+        Optional.ofNullable(docsType.getType())
+                .ifPresent(type-> {
+                    existsByType(type);
+                    findDocsType.setType(type);
+                });
+
+        return repository.save(findDocsType);
     }
 
     // 개별 조회
@@ -52,6 +65,12 @@ public class DocsTypeService {
     private DocumentType findVerifiedDocsType (Long typeId) {
         return repository.findById(typeId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DOCS_TYPE_NOT_FOUND));
+    }
+
+    private void existsByType(String type) {
+        if(repository.existsByType(type)) {
+            throw new BusinessLogicException(ExceptionCode.DOCS_TYPE_ALREADY_EXISTS);
+        }
     }
 
 }

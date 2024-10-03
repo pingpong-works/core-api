@@ -1,5 +1,7 @@
 package com.core.workflow.controller;
 
+import com.core.approval.dto.ApprovalDto;
+import com.core.approval.mapper.ApprovalMapper;
 import com.core.response.SingleResponseDto;
 import com.core.utils.UriCreator;
 import com.core.workflow.dto.WorkflowDto;
@@ -21,39 +23,40 @@ import java.net.URI;
 public class WorkflowController {
 
     private final WorkflowService service;
-    private final WorkflowMapper mapper;
+    private final WorkflowMapper workflowMapper;
+    private final ApprovalMapper approvalMapper;
     private static final String WORKFLOW_DEFAULT_URL = "/workflows";
 
-    public WorkflowController(WorkflowService service, WorkflowMapper mapper) {
+    public WorkflowController(WorkflowService service, WorkflowMapper workflowMapper, ApprovalMapper approvalMapper) {
         this.service = service;
-        this.mapper = mapper;
+        this.workflowMapper = workflowMapper;
+        this.approvalMapper = approvalMapper;
     }
 
     @PostMapping
     public ResponseEntity postWorkflow (@RequestBody WorkflowDto.Post postDto) {
 
-        Workflow createWorkflow = service.createWorkflow(mapper.postDtoToWorkflow(postDto));
+        Workflow createWorkflow = service.createWorkflow(workflowMapper.postDtoToWorkflow(postDto));
 
         URI location = UriCreator.createUri(WORKFLOW_DEFAULT_URL, createWorkflow.getId());
 
         return ResponseEntity.created(location).build();
     }
 
-    @PatchMapping("/{workflow-id}")
-    public ResponseEntity patchWorkflow (@PathVariable("workflow-id") @Positive Long workflowId ,
-                                         @RequestBody WorkflowDto.Patch patchDto) {
-        patchDto.setId(workflowId);
-        Workflow patchWorkflow = service.updateWorkflow(mapper.patchDtoToWorkflow(patchDto));
+    @PatchMapping
+    public ResponseEntity patchWorkflow (@RequestBody ApprovalDto.Patch patchDto) {
+
+        Workflow workflow = service.updateWorkflow(approvalMapper.patchToApproval(patchDto));
 
         return new ResponseEntity(
-                new SingleResponseDto<>(mapper.approvalToResponse(patchWorkflow)), HttpStatus.OK);
+                new SingleResponseDto<>(workflowMapper.approvalToResponse(workflow)), HttpStatus.OK);
     }
 
     @GetMapping("/{workflow-id}")
     public ResponseEntity getWorkflow (@PathVariable("workflow-id") @Positive Long workflowId ) {
 
         return new ResponseEntity(
-                new SingleResponseDto<>(mapper.approvalToResponse(service.findWorkflow(workflowId))),HttpStatus.OK);
+                new SingleResponseDto<>(workflowMapper.approvalToResponse(service.findWorkflow(workflowId))),HttpStatus.OK);
     }
 
     @DeleteMapping("/{workflow-id}")

@@ -3,6 +3,7 @@ package com.core.type.dto;
 import com.core.template.dto.DocsTemplateDto;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -29,7 +30,9 @@ public class DocsTypeDto {
     @Builder
     @Getter
     public static class Patch {
-        private Long templateId;
+        @Setter
+        private Long id;
+       // private Long templateId;
         private String type;
     }
 
@@ -38,6 +41,6 @@ public class DocsTypeDto {
     public static class Response {
         private Long id;
         private String type;
-        private DocsTemplateDto.Response templates;
+        private DocsTemplateDto.Response documentTemplate;
     }
 }

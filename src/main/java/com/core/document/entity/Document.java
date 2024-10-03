@@ -37,7 +37,7 @@ public class Document {
     @Builder.Default
     private DocumentStatus documentStatus = DocumentStatus.DRAFT;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(name = "workflow_id")
     private Workflow workflow;
 

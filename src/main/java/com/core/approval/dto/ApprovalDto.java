@@ -12,12 +12,15 @@ public class ApprovalDto {
         private Long employeeId; //결재자
         private int approvalOrder;
     }
-
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
     @Getter
     public static class Patch {
         private Long id;
         private int approvalOrder;
-        private String approvalStatus;
+        private Approval.ApprovalStatus approvalStatus;
+        private String message;
         private Long employeeId;
     }
 

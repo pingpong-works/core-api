@@ -21,7 +21,7 @@ public class FieldDto {
     @Getter
     public static class Patch {
         @Setter
-        private Long templateFieldId;
+        private Long id;
         private String fieldName;
         private String fieldType;
     }
@@ -30,7 +30,7 @@ public class FieldDto {
     @Builder
     @Getter
     public static class Response {
-        private Long templateFieldId;
+        private Long id;
         private String fieldName;
         private String fieldType;
     }

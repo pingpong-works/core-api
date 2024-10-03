@@ -15,8 +15,10 @@ public interface DocsTypeMapper {
     default DocumentType postDtoToDocsType(DocsTypeDto.Post postDto) {
         DocumentType.DocumentTypeBuilder docsTypeBuilder = DocumentType.builder();
 
+        DocumentTemplate documentTemplate;
+
         if (postDto.getTemplateId() != null && postDto.getTemplateId() > 0) {
-            DocumentTemplate documentTemplate = DocumentTemplate.builder()
+            documentTemplate = DocumentTemplate.builder()
                     .id(postDto.getTemplateId())
                     .build();
             docsTypeBuilder.documentTemplate(documentTemplate);

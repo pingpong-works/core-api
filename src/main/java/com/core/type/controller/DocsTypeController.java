@@ -39,9 +39,10 @@ public class DocsTypeController {
         return ResponseEntity.created(location).build();
     }
 
-    @PatchMapping("/{documentId}")
-    public ResponseEntity patchDocsType (@RequestBody DocsTypeDto.Patch patchDto) {
-
+    @PatchMapping("/{type-id}")
+    public ResponseEntity patchDocsType (@PathVariable("type-id") @Positive Long documentId ,
+                                         @RequestBody DocsTypeDto.Patch patchDto) {
+        patchDto.setId(documentId);
         DocumentType docsType = service.updateDocsType(mapper.patchDtoToDocsType(patchDto));
 
         return new ResponseEntity(mapper.docsTypeToResponse(docsType), HttpStatus.OK);

@@ -45,7 +45,11 @@ public class DocsTemplateController {
     }
 
     @PatchMapping("/{template-id}")
-    public ResponseEntity patchTemplate(@Valid @RequestBody DocsTemplateDto.Patch patchDto) {
+    public ResponseEntity patchTemplate(@PathVariable("template-id") @Positive Long templateId,
+                                        @Valid @RequestBody DocsTemplateDto.Patch patchDto) {
+
+        patchDto.setId(templateId);
+
         DocumentTemplate updateTemplate = service.updateTemplate(mapper.patchDtoToDocsTemplate(patchDto));
 
         return new ResponseEntity(mapper.templateToResponse(updateTemplate),HttpStatus.OK);

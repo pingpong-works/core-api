@@ -5,12 +5,10 @@ import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.template.dto.DocsTemplateDto;
 import com.core.template.dto.FieldDto;
-import com.core.template.entity.DocumentTemplate;
 import com.core.type.dto.DocsTypeDto;
 import com.core.type.entity.DocumentType;
 import com.core.workflow.dto.WorkflowDto;
 import com.core.workflow.entity.Workflow;
-import lombok.Builder;
 import org.mapstruct.Mapper;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -51,10 +49,11 @@ public interface DocumentMapper {
         DocsTypeDto.Response docsTypeResponse = DocsTypeDto.Response.builder()
                 .id(document.getDocumentType().getId())
                 .type(document.getDocumentType().getType())
-                .templates(
+                .documentTemplate(
                         new DocsTemplateDto.Response(
                                 document.getDocumentType().getDocumentTemplate().getId(),
                                 document.getDocumentType().getDocumentTemplate().getTemplateName(),
+                                document.getDocumentType().getDocumentTemplate().getVersion(),
                                 document.getDocumentType().getDocumentTemplate().getFields().stream()
                                         .map(field -> new FieldDto.Response(
                                                 field.getId(),
@@ -68,7 +67,7 @@ public interface DocumentMapper {
 
         // WorkflowDto 설정
         WorkflowDto.Response workflowResponse = WorkflowDto.Response.builder()
-                .workflowId(document.getWorkflow().getId())
+                .id(document.getWorkflow().getId())
                 .currentStep(document.getWorkflow().getCurrentStep())
                 .build();
 
@@ -90,8 +89,6 @@ public interface DocumentMapper {
 
         return response;
     }
-
-
     Document patchDtoToDocument(DocumentDto.Patch patchDto);
 
     List<DocumentDto.Response> documentsToResponses(List<Document> documents);
