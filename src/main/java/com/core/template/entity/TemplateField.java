@@ -1,8 +1,6 @@
 package com.core.template.entity;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 
@@ -10,6 +8,9 @@ import javax.persistence.*;
 @Setter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
+
 public class TemplateField {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

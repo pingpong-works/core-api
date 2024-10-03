@@ -54,8 +54,10 @@ public class DocumentController {
     }
 
     @GetMapping
-    public ResponseEntity getDocuments (@Positive @RequestParam int page, @Positive @RequestParam int size,
-                                        @RequestParam String sort, @RequestParam String direction) {
+    public ResponseEntity getDocuments (@Positive @RequestParam int page,
+                                        @Positive @RequestParam int size,
+                                        @RequestParam(required = false) String sort,
+                                        @RequestParam(required = false) String direction) {
 
         String criteria = "id";
 

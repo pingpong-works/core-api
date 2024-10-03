@@ -20,6 +20,9 @@ public class DocumentTemplate {
     @Column(nullable = false)
     private String templateName;
 
+    @Column(columnDefinition = "int default 1")
+    private int version;
+
     @OneToMany(mappedBy = "documentTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateField> fields;
 
