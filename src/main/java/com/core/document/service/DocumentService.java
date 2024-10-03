@@ -2,8 +2,11 @@ package com.core.document.service;
 
 import com.core.client.auth.AuthServiceClient;
 import com.core.client.auth.EmployeeDto;
+import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.document.repository.DocumentRepository;
+import com.core.document.repository.DocumentRepositoryCustom;
+import com.core.document.repository.DocumentRepositoryImpl;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
 import com.core.type.entity.DocumentType;
@@ -23,6 +26,7 @@ public class DocumentService {
     private final DocsTypeService docsTypeService;
     private final WorkflowRepository workflowRepository;
     private final AuthServiceClient authServiceClient;
+    private final DocumentRepositoryCustom documentRepositoryCustom;
 
 
     //전자결재서류 생성
@@ -54,11 +58,11 @@ public class DocumentService {
     }
 
     // 전체 조회 (pagination)
-    public Page<Document> findDocuments(int page, int size ,String criteria, String direction) {
+    public Page<Document> findDocuments(int page, int size , String criteria, String direction, DocumentDto.DocumentSearch search) {
 
         Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
 
-        return documentRepository.findAll(pageable);
+        return documentRepositoryCustom.findDocument(search, pageable);
     }
 
     // 개별 삭제

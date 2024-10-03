@@ -9,6 +9,7 @@ import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
 import com.core.response.MultiResponseDto;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.constraints.Positive;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,12 +60,20 @@ public class DocumentController {
     public ResponseEntity getDocuments (@Positive @RequestParam int page,
                                         @Positive @RequestParam int size,
                                         @RequestParam(required = false) String sort,
-                                        @RequestParam(required = false) String direction) {
+                                        @RequestParam(required = false) String direction,
+                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate start,
+                                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end,
+                                        @RequestParam(required = false) String author,
+                                        @RequestParam(required = false) String departmentName,
+                                        @RequestParam(required = false) Document.DocumentStatus documentStatus,
+                                        @RequestParam(required = false) String title,
+                                        @RequestParam(required = false) String type) {
+
 
         String criteria = "id";
 
         if(sort != null) {
-            List<String> sorts = Arrays.asList("title", "createdAt", "id");
+            List<String> sorts = Arrays.asList("title", "createdAt", "id", "documentType.type", "author" , "departmentName", "documentStatus");
 
             if (sorts.contains(sort)) {
                 criteria = sort;
@@ -71,8 +81,17 @@ public class DocumentController {
                 throw new BusinessLogicException(ExceptionCode.INVALID_SORT_FIELD);
             }
         }
+        DocumentDto.DocumentSearch search = DocumentDto.DocumentSearch.builder()
+                .searchStartDate(start)
+                .searchEndDate(end)
+                .author(author)
+                .departmentName(departmentName)
+                .documentStatus(documentStatus)
+                .title(title)
+                .type(type)
+                .build();
 
-        Page<Document> documentPage = service.findDocuments(page - 1, size, criteria, direction);
+        Page<Document> documentPage = service.findDocuments(page - 1, size, criteria, direction, search);
         List<DocumentDto.Response> documentResponseList = mapper.documentsToResponses( documentPage.getContent());
 
         return new ResponseEntity<>(
