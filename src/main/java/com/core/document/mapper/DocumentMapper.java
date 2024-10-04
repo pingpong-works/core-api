@@ -45,6 +45,7 @@ public interface DocumentMapper {
                 .title(document.getTitle())
                 .content(document.getContent())
                 .customFields(document.getCustomFields())
+                .documentCode(document.getDocumentCode())
                 .build();
 
         // DocsTypeDto 설정
@@ -66,31 +67,36 @@ public interface DocumentMapper {
                         )
                 )
                 .build();
-
-        // WorkflowDto 설정
-        WorkflowDto.Response workflowResponse = WorkflowDto.Response.builder()
-                .id(document.getWorkflow().getId())
-                .currentStep(document.getWorkflow().getCurrentStep())
-                .build();
-
-        // 승인자 정보 설정
-        List<ApprovalDto.Response> approvals = document.getWorkflow().getApprovals().stream()
-                .map(approval -> {
-                    return ApprovalDto.Response.builder()
-                            .employeeId(approval.getEmployeeId())
-                            .approvalOrder(approval.getApprovalOrder())
-                            .approvalStatus(approval.getApprovalStatus())
-                            .build();
-                }).collect(Collectors.toList());
-
-        workflowResponse.setApprovals(approvals);
-
-        // 완성된 Response 객체 반환
-        response.setWorkFlow(workflowResponse);
         response.setDocsTypes(docsTypeResponse);
+
+        // WorkflowDto 설정 - 임시저장 해야해서 null 검증 필요
+        if (document.getWorkflow() != null) {
+            WorkflowDto.Response workflowResponse = WorkflowDto.Response.builder()
+                    .id(document.getWorkflow().getId())
+                    .currentStep(document.getWorkflow().getCurrentStep())
+                    .build();
+
+            // 승인자 정보 설정 (null 검사 후 처리)
+            if (document.getWorkflow().getApprovals() != null) {
+                List<ApprovalDto.Response> approvals = document.getWorkflow().getApprovals().stream()
+                        .map(approval -> ApprovalDto.Response.builder()
+                                .employeeId(approval.getEmployeeId())
+                                .approvalOrder(approval.getApprovalOrder())
+                                .approvalStatus(approval.getApprovalStatus())
+                                .build())
+                        .collect(Collectors.toList());
+
+                workflowResponse.setApprovals(approvals);
+            }
+
+            // 완성된 WorkflowResponse를 설정
+            response.setWorkFlow(workflowResponse);
+        }
 
         return response;
     }
+
+
     Document patchDtoToDocument(DocumentDto.Patch patchDto);
 
     List<DocumentDto.Response> documentsToResponses(List<Document> documents);

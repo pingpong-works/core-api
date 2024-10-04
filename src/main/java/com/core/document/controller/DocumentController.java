@@ -34,13 +34,22 @@ public class DocumentController {
         this.service = service;
     }
 
-    @PostMapping
-    public ResponseEntity postDocument (@RequestBody DocumentDto.Post postDto) {
-
+    // 임시 저장
+    @PostMapping("/save")
+    public ResponseEntity saveDraftDocument(@RequestBody DocumentDto.Post postDto) {
         Document document = service.createDocument(mapper.postDtoToDocument(postDto));
-
         return new ResponseEntity(mapper.documentToResponse(document), HttpStatus.OK);
     }
+
+    // 문서 제출
+    @PostMapping("/submit")
+    public ResponseEntity submitDocument(@RequestBody DocumentDto.Post postDto) {
+        Document document = service.submitDocument(mapper.postDtoToDocument(postDto));
+        return new ResponseEntity(mapper.documentToResponse(document), HttpStatus.OK);
+    }
+
+    //임시저장 불러오기
+
 
     @PatchMapping("/{documentId}")
     public ResponseEntity patchDocument (@RequestBody DocumentDto.Patch patchDto) {
@@ -98,10 +107,12 @@ public class DocumentController {
                 new MultiResponseDto<>(documentResponseList, documentPage), HttpStatus.OK);
     }
 
+    // 추후 보완예정
     @DeleteMapping("/{documentId}")
-    public ResponseEntity deleteDocument (@PathVariable("documentId") @Positive Long documentId) {
+    public ResponseEntity deleteDocument (@PathVariable("documentId") @Positive Long documentId,
+                                          Long employeeId) {
 
-        service.deleteDocument(documentId);
+        service.deleteDocument(documentId, employeeId);
 
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }

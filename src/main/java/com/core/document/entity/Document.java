@@ -36,6 +36,9 @@ public class Document {
     private String author;
 
     @Column
+    private String documentCode;
+
+    @Column
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -44,7 +47,7 @@ public class Document {
     private DocumentStatus documentStatus = DocumentStatus.DRAFT;
 
     @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @JoinColumn(name = "workflow_id")
+    @JoinColumn(name = "workflow_id", nullable = true)
     private Workflow workflow;
 
     @Convert(converter = MapToConverter.class)
@@ -56,7 +59,7 @@ public class Document {
     private DocumentType documentType;
 
     public enum DocumentStatus {
-        DRAFT("작성중"),
+        DRAFT("임시 저장"),
         IN_PROGRESS("결재중"),
         APPROVED("승인됨"),
         REJECTED("반려됨");

@@ -45,6 +45,7 @@ public class DocumentDto {
         private LocalDateTime createdAt;
         private Document.DocumentStatus documentStatus;
         private Map<String,Object> customFields;
+        private String documentCode;
         //docsTemplate
         private DocsTypeDto.Response docsTypes;
 
