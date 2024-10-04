@@ -16,7 +16,8 @@ public enum ExceptionCode {
     DOCUMENT_HAS_BEEN_FINALIZED(409,"The document has been finalized" ),
     DOCUMENT_HAS_BEEN_REJECTED(409,"The document has been rejected" ),
     DOCUMENT_NOT_FOUND(404, "Document Not Found" ),
-    EMPLOYEE_NOT_FOUND(404, "Employee Not Found" );
+    EMPLOYEE_NOT_FOUND(404, "Employee Not Found" ),
+    DO_NOT_HAVE_PERMISSION(403,"You do not have permission to delete" );
 
     @Getter
     private int status;

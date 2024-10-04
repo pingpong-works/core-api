@@ -1,4 +1,4 @@
-package com.core.utils;
+package com.core.config;
 
 
 import com.querydsl.jpa.impl.JPAQueryFactory;

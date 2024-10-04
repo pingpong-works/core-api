@@ -6,7 +6,6 @@ import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.document.repository.DocumentRepository;
 import com.core.document.repository.DocumentRepositoryCustom;
-import com.core.document.repository.DocumentRepositoryImpl;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
 import com.core.type.entity.DocumentType;
@@ -19,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
@@ -29,8 +30,32 @@ public class DocumentService {
     private final DocumentRepositoryCustom documentRepositoryCustom;
 
 
-    //전자결재서류 생성
+    //전자결재서류 생성 - 임시저장
     public Document createDocument(Document document) {
+
+        //workflow id, documentType id 검증
+        DocumentType documentType = docsTypeService.findDocsType(document.getDocumentType().getId());
+
+        Workflow workflow = null;
+        if (document.getWorkflow().getId() != null) {
+            workflow = workflowRepository.findById(document.getWorkflow().getId())
+                    .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
+            document.setWorkflow(workflow);
+        }
+
+        EmployeeDto employee = verifiedEmployee(document.getEmployeeId());
+
+
+        document.setDocumentType(documentType);
+        document.setAuthor(employee.getName());
+        document.setDepartmentName(employee.getDepartmentName());
+        document.setWorkflow(workflow);
+
+        return documentRepository.save(document);
+    }
+
+    //전자결재 - 제출
+    public Document submitDocument(Document document) {
 
         //workflow id, documentType id 검증
         DocumentType documentType = docsTypeService.findDocsType(document.getDocumentType().getId());
@@ -43,6 +68,8 @@ public class DocumentService {
         document.setWorkflow(workflow);
         document.setAuthor(employee.getName());
         document.setDepartmentName(employee.getDepartmentName());
+        document.setDocumentCode(createdDocumentCode(document));
+        document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
 
         return documentRepository.save(document);
     }
@@ -65,10 +92,22 @@ public class DocumentService {
         return documentRepositoryCustom.findDocument(search, pageable);
     }
 
-    // 개별 삭제
-    public void deleteDocument(Long documentId) {
+    // 개별 삭제 (관리자 또는 임시저장은 본인만)
+    public void deleteDocument(Long documentId, Long employeeId) {
+        Document findDocument = findVerifiedDocument(documentId);
 
-        documentRepository.delete(findVerifiedDocument(documentId));
+        if(!findDocument.getDocumentStatus().equals(Document.DocumentStatus.DRAFT)) {
+           throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
+        }
+
+        EmployeeDto employee = verifiedEmployee(employeeId);
+
+        //관리자가 아닐 경우 본인이 작성한 글만 삭제 가능
+        if(findDocument.getEmployeeId() != employee.getId()) {
+            throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
+        }
+
+        documentRepository.delete(findDocument);
     }
 
     private Document findVerifiedDocument (Long documentId) {
@@ -90,4 +129,13 @@ public class DocumentService {
         return employee;
     }
 
+    //문서번호 생성
+    private String createdDocumentCode (Document document) {
+        String docsType = document.getDocumentType().getType();
+        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 5).toUpperCase();
+
+        String formattedId = String.format("%05d", document.getId());
+
+        return docsType.substring(0, 2) + "-" + uuid + "-" + formattedId;
+    }
 }
