@@ -8,6 +8,7 @@ import com.core.document.repository.DocumentRepository;
 import com.core.document.repository.DocumentRepositoryCustom;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
+import com.core.kfaka.ApprovalProducer;
 import com.core.type.entity.DocumentType;
 import com.core.type.service.DocsTypeService;
 import com.core.utils.PageableCreator;
@@ -28,7 +29,7 @@ public class DocumentService {
     private final WorkflowRepository workflowRepository;
     private final AuthServiceClient authServiceClient;
     private final DocumentRepositoryCustom documentRepositoryCustom;
-
+    private final ApprovalProducer approvalProducer;
 
     //전자결재서류 생성 - 임시저장
     public Document createDocument(Document document) {
@@ -70,6 +71,16 @@ public class DocumentService {
         document.setDepartmentName(employee.getDepartmentName());
         document.setDocumentCode(createdDocumentCode(document));
         document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
+
+        //전체 승인자에게 알림 전송
+        workflow.getApprovals().forEach(approval -> {
+            approvalProducer.sendApprovalNotification(
+                    approval.getEmployeeId(),
+                    "전자결재 문서가 도착했습니다",
+                    approval.getId()
+            );
+        });
+
 
         return documentRepository.save(document);
     }
@@ -134,8 +145,8 @@ public class DocumentService {
         String docsType = document.getDocumentType().getType();
         String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 5).toUpperCase();
 
-        String formattedId = String.format("%05d", document.getId());
+       // String formattedId = String.format("%05d", document.getId());
 
-        return docsType.substring(0, 2) + "-" + uuid + "-" + formattedId;
+        return docsType.substring(0, 2) + "-" + uuid + "-" ;//+ formattedId;
     }
 }
