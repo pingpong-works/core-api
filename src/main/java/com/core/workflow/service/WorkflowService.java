@@ -8,6 +8,7 @@ import com.core.document.entity.Document;
 import com.core.document.service.DocumentService;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
+import com.core.kfaka.ApprovalProducer;
 import com.core.workflow.entity.Workflow;
 import com.core.workflow.repository.WorkflowRepository;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,15 @@ public class WorkflowService {
     private final ApprovalRepository approvalRepository;
     private final DocumentService documentService;
     private final AuthServiceClient authServiceClient;
+    private final ApprovalProducer approvalProducer;
 
-    public WorkflowService(WorkflowRepository workflowRepository, ApprovalRepository approvalRepository, DocumentService documentService, AuthServiceClient authServiceClient) {
+
+    public WorkflowService(WorkflowRepository workflowRepository, ApprovalRepository approvalRepository, DocumentService documentService, AuthServiceClient authServiceClient, ApprovalProducer approvalProducer, ApprovalProducer approvalProducer1) {
         this.workflowRepository = workflowRepository;
         this.approvalRepository = approvalRepository;
         this.documentService = documentService;
         this.authServiceClient = authServiceClient;
+        this.approvalProducer = approvalProducer;
     }
 
     public Workflow createWorkflow(Workflow workflow) {
@@ -118,7 +122,6 @@ public class WorkflowService {
         // 승인 시 +1, 전결시 마지막 단계
         // 반려 또는 협의요청 시 계산 없음.
 
-
         if(status == Approval.ApprovalStatus.APPROVE) {
             return workflow.getCurrentStep() + 1;
         } else if (status == Approval.ApprovalStatus.FINALIZE) {
@@ -149,29 +152,6 @@ public class WorkflowService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
     }
 
-    private void updateDocumentStatus(Workflow workflow) {
-        Document document = workflow.getDocument();
-
-        boolean isAllApproved = workflow.getApprovals().stream()
-                .allMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.APPROVE);
-
-        boolean isAnyRejected = workflow.getApprovals().stream()
-                .anyMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.REJECT);
-
-        boolean isFinalized = workflow.getApprovals().stream()
-                .anyMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.FINALIZE);
-
-        if (isAllApproved || isFinalized) {
-            document.setDocumentStatus(Document.DocumentStatus.APPROVED);
-        } else if (isAnyRejected) {
-            document.setDocumentStatus(Document.DocumentStatus.REJECTED);
-        } else {
-            document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
-        }
-
-        documentService.updateDocument(document);
-    }
-
     public EmployeeDto getEmployee (Long employeeId) {
         return authServiceClient.getEmployeeById(employeeId);
     }
@@ -183,4 +163,44 @@ public class WorkflowService {
             throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
         }
     }
+
+    private void updateDocumentStatus(Workflow workflow) {
+        Document document = workflow.getDocument();
+
+        if (isAllApproved(workflow) || isFinalized(workflow)) {
+            document.setDocumentStatus(Document.DocumentStatus.APPROVED);
+            String message = String.format("%s: 전자결재 문서가 승인되었습니다.", document.getDocumentCode());
+            sendNotificationToAuthor(document.getEmployeeId(),message, document.getId());
+
+        } else if (isAnyRejected(workflow)) {
+            document.setDocumentStatus(Document.DocumentStatus.REJECTED);
+            String message = String.format("%s: 전자결재 문서가 반려되었습니다.", document.getDocumentCode());
+            sendNotificationToAuthor(document.getEmployeeId(), message, document.getId());
+        } else {
+            document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
+        }
+
+        documentService.updateDocument(document);
+    }
+
+    private boolean isAllApproved(Workflow workflow) {
+        return workflow.getApprovals().stream()
+                .allMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.APPROVE);
+    }
+
+    private boolean isAnyRejected(Workflow workflow) {
+        return workflow.getApprovals().stream()
+                .anyMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.REJECT);
+    }
+
+    private boolean isFinalized(Workflow workflow) {
+        return workflow.getApprovals().stream()
+                .anyMatch(approval -> approval.getApprovalStatus() == Approval.ApprovalStatus.FINALIZE);
+    }
+
+    private void sendNotificationToAuthor(Long authorId, String message, Long documentId) {
+
+        approvalProducer.sendDocumentNotification(authorId, message, documentId);
+    }
+
 }
