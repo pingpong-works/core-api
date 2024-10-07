@@ -1,7 +1,8 @@
 package com.core.document.service;
 
 import com.core.client.auth.AuthServiceClient;
-import com.core.client.auth.EmployeeDto;
+import com.core.client.auth.EmployeeData;
+import com.core.client.auth.UserResponse;
 import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.document.repository.DocumentRepository;
@@ -15,12 +16,14 @@ import com.core.utils.PageableCreator;
 import com.core.workflow.entity.Workflow;
 import com.core.workflow.repository.WorkflowRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
@@ -44,7 +47,7 @@ public class DocumentService {
             document.setWorkflow(workflow);
         }
 
-        EmployeeDto employee = verifiedEmployee(document.getEmployeeId());
+        EmployeeData employee = verifiedEmployee(document.getEmployeeId());
 
 
         document.setDocumentType(documentType);
@@ -63,7 +66,7 @@ public class DocumentService {
         Workflow workflow = workflowRepository.findById(document.getWorkflow().getId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
 
-        EmployeeDto employee = verifiedEmployee(document.getEmployeeId());
+        EmployeeData employee = verifiedEmployee(document.getEmployeeId());
 
         document.setDocumentType(documentType);
         document.setWorkflow(workflow);
@@ -111,10 +114,10 @@ public class DocumentService {
            throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
         }
 
-        EmployeeDto employee = verifiedEmployee(employeeId);
+        EmployeeData employee = verifiedEmployee(employeeId);
 
         //관리자가 아닐 경우 본인이 작성한 글만 삭제 가능
-        if(findDocument.getEmployeeId() != employee.getId()) {
+        if(findDocument.getEmployeeId() != employee.getEmployeeId()) {
             throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
         }
 
@@ -126,27 +129,39 @@ public class DocumentService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DOCUMENT_NOT_FOUND));
     }
 
-    //외부에서 employee 가져오기
-    public EmployeeDto getEmployee (Long employeeId) {
-        return authServiceClient.getEmployeeById(employeeId);
+    public UserResponse getEmployee(Long employeeId) {
+        UserResponse response = authServiceClient.getEmployeeByIdForUser(employeeId);
+
+        // 응답 데이터 확인
+        log.debug("Response from Feign: {}", response); // 로그로 응답 출력
+
+        if(response == null || response.getData() == null) {
+            throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
+        }
+
+        return response;
     }
 
     //검증된 회원인지 확인
-    public EmployeeDto verifiedEmployee(Long employeeId) {
-        EmployeeDto employee = getEmployee(employeeId);
-        if (employee == null) {
+    public EmployeeData verifiedEmployee(Long employeeId) {
+        UserResponse employeeResponse = getEmployee(employeeId);
+
+        EmployeeData employee = employeeResponse.getData();  // 내부의 data 필드 접근
+
+        // null 체크 및 필수 필드 확인
+        if (employee == null || employee.getName() == null || employee.getEmployeeId() == null || employee.getDepartmentName() == null) {
             throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
         }
+
         return employee;
     }
 
     //문서번호 생성
     private String createdDocumentCode (Document document) {
         String docsType = document.getDocumentType().getType();
-        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 5).toUpperCase();
+        String uuid = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
 
-       // String formattedId = String.format("%05d", document.getId());
 
-        return docsType.substring(0, 2) + "-" + uuid + "-" ;//+ formattedId;
+        return docsType.substring(0, 2) + "-" + uuid;
     }
 }

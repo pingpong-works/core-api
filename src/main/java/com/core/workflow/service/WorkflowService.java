@@ -3,7 +3,8 @@ package com.core.workflow.service;
 import com.core.approval.entity.Approval;
 import com.core.approval.repository.ApprovalRepository;
 import com.core.client.auth.AuthServiceClient;
-import com.core.client.auth.EmployeeDto;
+
+import com.core.client.auth.UserResponse;
 import com.core.document.entity.Document;
 import com.core.document.service.DocumentService;
 import com.core.exception.BusinessLogicException;
@@ -152,13 +153,13 @@ public class WorkflowService {
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
     }
 
-    public EmployeeDto getEmployee (Long employeeId) {
-        return authServiceClient.getEmployeeById(employeeId);
+    public UserResponse getEmployee (Long employeeId) {
+       return authServiceClient.getEmployeeByIdForUser(employeeId);
     }
 
     //검증된 회원인지 확인
     private void verifiedMember (Long employeeId) {
-        EmployeeDto employee = getEmployee(employeeId);
+        UserResponse employee = getEmployee(employeeId);
         if (employee == null) {
             throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
         }
