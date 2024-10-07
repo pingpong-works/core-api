@@ -8,7 +8,7 @@ import com.core.document.repository.DocumentRepository;
 import com.core.document.repository.DocumentRepositoryCustom;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
-import com.core.kfaka.ApprovalProducer;
+import com.alarm.kafka.ApprovalProducer;
 import com.core.type.entity.DocumentType;
 import com.core.type.service.DocsTypeService;
 import com.core.utils.PageableCreator;

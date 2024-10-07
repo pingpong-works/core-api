@@ -8,7 +8,7 @@ import com.core.document.entity.Document;
 import com.core.document.service.DocumentService;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
-import com.core.kfaka.ApprovalProducer;
+import com.alarm.kafka.ApprovalProducer;
 import com.core.workflow.entity.Workflow;
 import com.core.workflow.repository.WorkflowRepository;
 import org.springframework.stereotype.Service;
