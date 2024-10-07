@@ -60,6 +60,7 @@ dependencies {
 	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
 	annotationProcessor "javax.annotation:javax.annotation-api"
 	annotationProcessor "javax.persistence:javax.persistence-api"
+	implementation 'io.github.openfeign:feign-jackson:11.10'
 
 	// Kafka
 	implementation 'org.apache.kafka:kafka-streams'

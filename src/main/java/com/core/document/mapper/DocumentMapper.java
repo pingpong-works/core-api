@@ -1,7 +1,6 @@
 package com.core.document.mapper;
 
 import com.core.approval.dto.ApprovalDto;
-import com.core.client.auth.EmployeeDto;
 import com.core.document.dto.DocumentDto;
 import com.core.document.entity.Document;
 import com.core.template.dto.DocsTemplateDto;
