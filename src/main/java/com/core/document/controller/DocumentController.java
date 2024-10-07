@@ -48,9 +48,6 @@ public class DocumentController {
         return new ResponseEntity(mapper.documentToResponse(document), HttpStatus.OK);
     }
 
-    //임시저장 불러오기
-
-
     @PatchMapping("/{documentId}")
     public ResponseEntity patchDocument (@RequestBody DocumentDto.Patch patchDto) {
 

@@ -1,4 +1,4 @@
-package com.core.kfaka;
+package com.alarm.kafka;
 
 import lombok.Builder;
 import lombok.Getter;

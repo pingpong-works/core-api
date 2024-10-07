@@ -1,4 +1,4 @@
-package com.core.kfaka;
+package com.alarm.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
