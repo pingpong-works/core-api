@@ -1,5 +1,7 @@
 package com.core.document.service;
 
+import com.core.approval.entity.Approval;
+import com.core.approval.repository.ApprovalRepository;
 import com.core.client.auth.AuthServiceClient;
 import com.core.client.auth.EmployeeData;
 import com.core.client.auth.UserResponse;
@@ -33,6 +35,7 @@ public class DocumentService {
     private final AuthServiceClient authServiceClient;
     private final DocumentRepositoryCustom documentRepositoryCustom;
     private final ApprovalProducer approvalProducer;
+    private final ApprovalRepository approvalRepository;
 
     //전자결재서류 생성 - 임시저장
     public Document createDocument(Document document) {
@@ -40,20 +43,22 @@ public class DocumentService {
         //workflow id, documentType id 검증
         DocumentType documentType = docsTypeService.findDocsType(document.getDocumentType().getId());
 
+        EmployeeData employee = verifiedEmployee(document.getEmployeeId());
+
         Workflow workflow = null;
         if (document.getWorkflow().getId() != null) {
             workflow = workflowRepository.findById(document.getWorkflow().getId())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
-            document.setWorkflow(workflow);
+
+            //결재라인에 담당자 추가
+            workflow = insertAuthor(workflow, employee.getEmployeeId());
+
         }
 
-        EmployeeData employee = verifiedEmployee(document.getEmployeeId());
-
-
         document.setDocumentType(documentType);
+        document.setWorkflow(workflow);
         document.setAuthor(employee.getName());
         document.setDepartmentName(employee.getDepartmentName());
-        document.setWorkflow(workflow);
         document.setDocumentCode("생성중");
 
         return documentRepository.save(document);
@@ -62,29 +67,37 @@ public class DocumentService {
     //전자결재 - 제출
     public Document submitDocument(Document document) {
 
+        //임시저장이 있다면 찾아와야 함.
+        if(document.getId() != null) {
+            findVerifiedDocument(document.getId());
+        }
+
         //workflow id, documentType id 검증
         DocumentType documentType = docsTypeService.findDocsType(document.getDocumentType().getId());
-        Workflow workflow = workflowRepository.findById(document.getWorkflow().getId())
+        Workflow findWorkflow = workflowRepository.findById(document.getWorkflow().getId())
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
 
         EmployeeData employee = verifiedEmployee(document.getEmployeeId());
 
+
+        //결재라인에 담당자 추가
+        Workflow addApproval = insertAuthor(findWorkflow, employee.getEmployeeId());
+        document.setWorkflow(addApproval);
+
         document.setDocumentType(documentType);
-        document.setWorkflow(workflow);
         document.setAuthor(employee.getName());
         document.setDepartmentName(employee.getDepartmentName());
         document.setDocumentCode(createdDocumentCode(document));
         document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
 
         //전체 승인자에게 알림 전송
-        workflow.getApprovals().forEach(approval -> {
+        findWorkflow.getApprovals().forEach(approval -> {
             approvalProducer.sendApprovalNotification(
                     approval.getEmployeeId(),
                     "전자결재 문서가 도착했습니다",
                     approval.getId()
             );
         });
-
 
         return documentRepository.save(document);
     }
@@ -164,5 +177,25 @@ public class DocumentService {
 
 
         return docsType.substring(0, 2) + "-" + uuid;
+    }
+
+    private Workflow insertAuthor(Workflow workflow, Long employeeId) {
+        // 승인자에 담당자 정보 저장
+        Approval approval = new Approval();
+        approval.setEmployeeId(employeeId);
+        approval.setApprovalStatus(Approval.ApprovalStatus.APPROVE);
+        approval.setApprovalOrder(0);
+
+        approval.setWorkflow(workflow);
+
+        // Approval 먼저 저장
+        approval = approvalRepository.save(approval);
+
+        // 저장된 approval을 workflow에 추가
+        workflow.getApprovals().add(0, approval);
+        //idx 0번으로 추가는 안되서 approvalOrder 순서 0으로 지정
+
+        // workflow 저장
+        return workflowRepository.save(workflow);
     }
 }
