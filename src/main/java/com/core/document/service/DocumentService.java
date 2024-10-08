@@ -54,6 +54,7 @@ public class DocumentService {
         document.setAuthor(employee.getName());
         document.setDepartmentName(employee.getDepartmentName());
         document.setWorkflow(workflow);
+        document.setDocumentCode("생성중");
 
         return documentRepository.save(document);
     }

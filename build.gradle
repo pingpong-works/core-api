@@ -66,6 +66,9 @@ dependencies {
 	implementation 'org.apache.kafka:kafka-streams'
 	implementation 'org.springframework.kafka:spring-kafka'
 	testImplementation 'org.springframework.kafka:spring-kafka-test'
+
+
+	implementation 'mysql:mysql-connector-java:8.0.33'
 }
 
 dependencyManagement {

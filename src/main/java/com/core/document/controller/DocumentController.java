@@ -7,6 +7,7 @@ import com.core.document.service.DocumentService;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
 import com.core.response.MultiResponseDto;
+import com.core.response.SingleResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -57,8 +58,8 @@ public class DocumentController {
 
     @GetMapping("/{documentId}")
     public ResponseEntity getDocument (@PathVariable("documentId") @Positive Long documentId) {
-        return new ResponseEntity<>(mapper
-                .documentToResponse(service.findDocument(documentId)),HttpStatus.OK);
+        return new ResponseEntity<>( new SingleResponseDto<>
+                (mapper.documentToResponse(service.findDocument(documentId))),HttpStatus.OK);
     }
 
     @GetMapping
