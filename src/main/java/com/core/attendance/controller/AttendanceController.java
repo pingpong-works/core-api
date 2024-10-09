@@ -1,27 +1,35 @@
 package com.core.attendance.controller;
 
+import com.core.attendance.AttendanceMapper;
 import com.core.attendance.entity.Attendance;
 import com.core.attendance.service.AttendanceService;
-import com.core.client.auth.EmployeeData;
-import com.core.client.auth.UserResponse;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
+import com.core.response.MultiResponseDto;
+import com.core.utils.UriCreator;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.Positive;
+import java.net.URI;
+import java.util.Arrays;
+import java.util.List;
 
+@Validated
 @RestController
-@RequestMapping("/attendance")
+@RequestMapping("/attendances")
 public class AttendanceController {
 
+    private final AttendanceMapper mapper;
     private final AttendanceService attendanceService;
+    private static final String ATTENDANCE_DEFAULT_URL = "/attendances";
 
-    public AttendanceController(AttendanceService attendanceService) {
+    public AttendanceController(AttendanceMapper mapper, AttendanceService attendanceService) {
+        this.mapper = mapper;
         this.attendanceService = attendanceService;
     }
 
@@ -37,7 +45,59 @@ public class AttendanceController {
     public ResponseEntity<Attendance> checkOut(@RequestParam Long employeeId, HttpServletRequest request) {
         Attendance attendance = attendanceService.checkOut(employeeId, ipConvertString(request));
 
-        return ResponseEntity.ok(attendance);
+        URI location = UriCreator.createUri(ATTENDANCE_DEFAULT_URL, attendance.getId());
+        return ResponseEntity.created(location).build();
+    }
+
+
+    // 본인 근태 확인
+    @GetMapping("/my-attendance")
+    public ResponseEntity getAttendance (@RequestParam Long employeeId,
+                                         @RequestParam @Positive int page, @RequestParam @Positive int size,
+                                         @RequestParam(required = false) String direction,
+                                         @RequestParam(required = false) String sort) {
+
+        String criteria = "id";
+
+        if(sort != null) {
+            List<String> sorts = Arrays.asList("id", "attendanceStatus", "checkInTime", "checkOutTime");
+
+            if (sorts.contains(sort)) {
+                criteria = sort;
+            } else {
+                throw new BusinessLogicException(ExceptionCode.INVALID_SORT_FIELD);
+            }
+        }
+
+        Page<Attendance> attendancePage = attendanceService.findMyAttendance(employeeId, page-1, size, criteria, direction);
+        List<Attendance> attendanceList = attendancePage.getContent();
+
+        return new ResponseEntity(
+                new MultiResponseDto<>(mapper.attendancesToResponses(attendanceList),attendancePage), HttpStatus.OK);
+    }
+
+    // 관리자- 전직원 근태확인
+    @GetMapping
+    public ResponseEntity getAttendance (@RequestParam @Positive int page, @RequestParam @Positive int size,
+                                         @RequestParam(required = false) String direction,
+                                         @RequestParam(required = false) String sort) {
+        String criteria = "id";
+
+        if(sort != null) {
+            List<String> sorts = Arrays.asList("id", "attendanceStatus", "checkInTime", "checkOutTime", "employeeId");
+
+            if (sorts.contains(sort)) {
+                criteria = sort;
+            } else {
+                throw new BusinessLogicException(ExceptionCode.INVALID_SORT_FIELD);
+            }
+        }
+
+        Page<Attendance> attendancePage = attendanceService.findAttendances(page-1, size, criteria, direction);
+        List<Attendance> attendanceList = attendancePage.getContent();
+
+        return new ResponseEntity(
+                new MultiResponseDto<>(mapper.attendancesToResponses(attendanceList),attendancePage), HttpStatus.OK);
     }
 
     private String ipConvertString (HttpServletRequest request) {

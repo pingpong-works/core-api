@@ -17,7 +17,9 @@ public enum ExceptionCode {
     DOCUMENT_HAS_BEEN_REJECTED(409,"The document has been rejected" ),
     DOCUMENT_NOT_FOUND(404, "Document Not Found" ),
     EMPLOYEE_NOT_FOUND(404, "Employee Not Found" ),
-    DO_NOT_HAVE_PERMISSION(403,"You do not have permission to delete" );
+    DO_NOT_HAVE_PERMISSION(403,"You do not have permission to delete" ),
+    CAN_NOT_FIND_ATTENDANCE(404, "have no record of going to work" ),
+    NOT_ALLOWED_IP(403, "Not Allowed IP address" );
 
     @Getter
     private int status;

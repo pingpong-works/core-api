@@ -7,10 +7,11 @@ import com.core.client.auth.EmployeeData;
 import com.core.client.auth.UserResponse;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
+import com.core.utils.PageableCreator;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -72,6 +73,20 @@ public class AttendanceService {
         } else {
             throw new BusinessLogicException(ExceptionCode.CAN_NOT_FIND_ATTENDANCE);
         }
+    }
+
+    public Page<Attendance> findMyAttendance(Long employeeId, int page, int size,
+                                             String criteria, String direction) {
+        Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
+
+        return attendanceRepository.findByEmployeeId(employeeId, pageable);
+    }
+
+    public Page<Attendance> findAttendances(int page, int size,
+                                           String criteria, String direction) {
+        Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
+
+        return attendanceRepository.findAll(pageable);
     }
 
     private boolean isVerifiedIp(String ipAddress) {
