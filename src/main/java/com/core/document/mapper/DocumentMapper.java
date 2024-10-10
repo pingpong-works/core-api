@@ -45,6 +45,7 @@ public interface DocumentMapper {
                 .content(document.getContent())
                 .customFields(document.getCustomFields())
                 .documentCode(document.getDocumentCode())
+                .employeeId(document.getEmployeeId())
                 .build();
 
         // DocsTypeDto 설정

@@ -6,8 +6,12 @@ import com.core.workflow.dto.WorkflowDto;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 
@@ -46,6 +50,7 @@ public class DocumentDto {
         private Document.DocumentStatus documentStatus;
         private Map<String,Object> customFields;
         private String documentCode;
+        private Long employeeId;
         //docsTemplate
         private DocsTypeDto.Response docsTypes;
 
@@ -67,5 +72,15 @@ public class DocumentDto {
         private Document.DocumentStatus documentStatus;
         private String title;
         private String type;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class Delete {
+
+        @NotNull(message = "deleteIds의 List는 null일 수 없습니다.")
+        @NotEmpty(message = "deleteIds의 List는 비어있으면 안됩니다.")
+        @Size(min = 1, message = "deleteIds의 List는 최소 1개 이상이어야 합니다.")
+        private List<Long> deleteIds;
     }
 }

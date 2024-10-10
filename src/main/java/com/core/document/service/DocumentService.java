@@ -46,12 +46,13 @@ public class DocumentService {
         EmployeeData employee = verifiedEmployee(document.getEmployeeId());
 
         Workflow workflow = null;
-        if (document.getWorkflow().getId() != null) {
+        if ( document.getWorkflow().getId() != 0 ) {
             workflow = workflowRepository.findById(document.getWorkflow().getId())
                     .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
 
             //결재라인에 담당자 추가
             workflow = insertAuthor(workflow, employee.getEmployeeId());
+            document.setWorkflow(workflow);
 
         }
 

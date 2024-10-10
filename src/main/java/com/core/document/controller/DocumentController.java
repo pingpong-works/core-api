@@ -114,5 +114,17 @@ public class DocumentController {
         return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 
+    @DeleteMapping
+    public ResponseEntity deleteDocuments (@RequestBody DocumentDto.Delete deleteIds,
+                                          Long employeeId) {
+        List<Long> ids =  deleteIds.getDeleteIds();
+
+        for(Long id : ids) {
+            service.deleteDocument(id, employeeId);
+        }
+
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
+    }
+
 
 }
