@@ -27,6 +27,9 @@ public class Attendance {
     @Column
     private LocalDateTime checkOutTime;
 
+    @Column
+    private double dailyWorkingTime;
+
     @Enumerated(value = EnumType.STRING)
     @Column(length = 20, nullable = false)
     private AttendanceStatus attendanceStatus = AttendanceStatus.CLOCKED_OUT;

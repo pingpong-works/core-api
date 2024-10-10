@@ -19,7 +19,8 @@ public enum ExceptionCode {
     EMPLOYEE_NOT_FOUND(404, "Employee Not Found" ),
     DO_NOT_HAVE_PERMISSION(403,"You do not have permission to delete" ),
     CAN_NOT_FIND_ATTENDANCE(404, "have no record of going to work" ),
-    NOT_ALLOWED_IP(403, "Not Allowed IP address" );
+    NOT_ALLOWED_IP(403, "Not Allowed IP address" ),
+    TIME_NOT_NEGATIVE(409,  "Check-out time is earlier than check-in time");
 
     @Getter
     private int status;

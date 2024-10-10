@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -67,6 +69,7 @@ public class AttendanceService {
             findAttendance.setEmployeeId(employeeId);
             findAttendance.setCheckOutTime(LocalDateTime.now());
             findAttendance.setAttendanceStatus(Attendance.AttendanceStatus.CLOCKED_OUT);
+            findAttendance.setDailyWorkingTime(calculateWorkingTime(findAttendance.getCheckInTime(),findAttendance.getCheckOutTime()));
 
             return attendanceRepository.save(findAttendance);
 
@@ -119,6 +122,15 @@ public class AttendanceService {
         }
 
         return response;
+    }
+
+    private double calculateWorkingTime (LocalDateTime in, LocalDateTime out) {
+        Duration duration = Duration.between(in, out);
+        if (duration.isNegative()) {
+            throw new BusinessLogicException(ExceptionCode.TIME_NOT_NEGATIVE);
+        }
+        double workingHours = duration.toMinutes() / 60.0;
+        return Math.round(workingHours *100.0) /100.0;
     }
 
 }

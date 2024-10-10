@@ -20,5 +20,7 @@ public class AttendanceResponse {
 
     private LocalDateTime checkOutTime;
 
+    private double dailyWorkingTime;
+
     private Attendance.AttendanceStatus attendanceStatus;
 }
