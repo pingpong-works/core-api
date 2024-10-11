@@ -2,6 +2,8 @@ package com.core.attendance.service;
 
 import com.core.attendance.entity.Attendance;
 import com.core.attendance.repository.AttendanceRepository;
+import com.core.attendance.response.AttendanceResponse;
+import com.core.attendance.response.MonthlyWorkResponse;
 import com.core.client.auth.AuthServiceClient;
 import com.core.client.auth.EmployeeData;
 import com.core.client.auth.UserResponse;
@@ -31,6 +33,11 @@ public class AttendanceService {
     }
 
     public Attendance checkIn(Long employeeId, String ipAddress) {
+
+        attendanceRepository
+                .findByEmployeeIdAndAttendanceStatus(employeeId, Attendance.AttendanceStatus.CLOCKED_IN)
+                .ifPresent(a -> { throw new BusinessLogicException(ExceptionCode.CAN_NOT_WORK_IN); });
+
 
         log.info(ipAddress);
         //ip 주소 확인
@@ -86,10 +93,17 @@ public class AttendanceService {
     }
 
     public Page<Attendance> findAttendances(int page, int size,
-                                           String criteria, String direction) {
+                                            String criteria, String direction) {
         Pageable pageable = PageableCreator.createPageable(page, size, criteria, direction);
 
         return attendanceRepository.findAll(pageable);
+    }
+
+    public List<MonthlyWorkResponse> getMonthlyAttendanceStatistics(Long employeeId, int year, int month) {
+        //검증된 직원인지 확인
+        verifiedEmployee(employeeId);
+
+        return attendanceRepository.findTotalWorkingTimePerEmployeeForMonth(employeeId, year, month);
     }
 
     private boolean isVerifiedIp(String ipAddress) {
@@ -100,7 +114,7 @@ public class AttendanceService {
     }
 
     //검증된 회원인지 확인
-    public EmployeeData verifiedEmployee(Long employeeId) {
+    private EmployeeData verifiedEmployee(Long employeeId) {
         UserResponse employeeResponse = getEmployee(employeeId);
 
         EmployeeData employee = employeeResponse.getData();  // 내부의 data 필드 접근
@@ -112,7 +126,7 @@ public class AttendanceService {
         return employee;
     }
 
-    public UserResponse getEmployee(Long employeeId) {
+    private UserResponse getEmployee(Long employeeId) {
         UserResponse response = authServiceClient.getEmployeeByIdForUser(employeeId);
 
         log.debug("Response from Feign: {}", response);
@@ -132,5 +146,4 @@ public class AttendanceService {
         double workingHours = duration.toMinutes() / 60.0;
         return Math.round(workingHours *100.0) /100.0;
     }
-
 }
