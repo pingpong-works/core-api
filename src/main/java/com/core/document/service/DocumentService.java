@@ -95,7 +95,7 @@ public class DocumentService {
         findWorkflow.getApprovals().forEach(approval -> {
             approvalProducer.sendApprovalNotification(
                     approval.getEmployeeId(),
-                    "전자결재 문서가 도착했습니다",
+                    String.format("전자결재 문서[%s] 가 도착했습니다.", document.getDocumentCode()),
                     approval.getId()
             );
         });
