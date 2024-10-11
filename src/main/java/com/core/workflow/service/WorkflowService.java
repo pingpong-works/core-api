@@ -170,12 +170,12 @@ public class WorkflowService {
 
         if (isAllApproved(workflow) || isFinalized(workflow)) {
             document.setDocumentStatus(Document.DocumentStatus.APPROVED);
-            String message = String.format("%s: 전자결재 문서가 승인되었습니다.", document.getDocumentCode());
+            String message = String.format("전자결재 문서[%s] 가 승인되었습니다.", document.getDocumentCode());
             sendNotificationToAuthor(document.getEmployeeId(),message, document.getId());
 
         } else if (isAnyRejected(workflow)) {
             document.setDocumentStatus(Document.DocumentStatus.REJECTED);
-            String message = String.format("%s: 전자결재 문서가 반려되었습니다.", document.getDocumentCode());
+            String message = String.format("전자결재 문서[%s] 가 반려되었습니다.", document.getDocumentCode());
             sendNotificationToAuthor(document.getEmployeeId(), message, document.getId());
         } else {
             document.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
