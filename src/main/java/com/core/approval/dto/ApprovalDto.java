@@ -29,6 +29,7 @@ public class ApprovalDto {
     @AllArgsConstructor
     @Builder
     public static class Response {
+        private Long id;
         private Long employeeId;
         private int approvalOrder;
         private Approval.ApprovalStatus approvalStatus;

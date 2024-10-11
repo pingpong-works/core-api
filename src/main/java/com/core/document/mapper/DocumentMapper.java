@@ -80,6 +80,7 @@ public interface DocumentMapper {
             if (document.getWorkflow().getApprovals() != null) {
                 List<ApprovalDto.Response> approvals = document.getWorkflow().getApprovals().stream()
                         .map(approval -> ApprovalDto.Response.builder()
+                                .id(approval.getId())
                                 .employeeId(approval.getEmployeeId())
                                 .approvalOrder(approval.getApprovalOrder())
                                 .approvalStatus(approval.getApprovalStatus())

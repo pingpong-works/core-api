@@ -74,7 +74,7 @@ public class WorkflowService {
             }
         }
         //현재 결재라인 3번째인데 승인자 1번이 결재를 할 수 없다
-        if(findApproval.getWorkflow().getCurrentStep() >  approval.getApprovalOrder() - 1) {
+        if(findApproval.getWorkflow().getCurrentStep() >  approval.getApprovalOrder()) {
             throw new BusinessLogicException(ExceptionCode.APPROVAL_PERMISSION_DENIED);
         }
         //기존 workflow가 전부 승인 상태일 경우 수정할 수 없어야 한다. == approval size 로 확인
