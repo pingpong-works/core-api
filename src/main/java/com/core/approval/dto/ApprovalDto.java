@@ -32,6 +32,7 @@ public class ApprovalDto {
         private Long id;
         private Long employeeId;
         private int approvalOrder;
+        private String message;
         private Approval.ApprovalStatus approvalStatus;
     }
 }

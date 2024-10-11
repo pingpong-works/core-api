@@ -84,6 +84,7 @@ public interface DocumentMapper {
                                 .employeeId(approval.getEmployeeId())
                                 .approvalOrder(approval.getApprovalOrder())
                                 .approvalStatus(approval.getApprovalStatus())
+                                .message(approval.getMessage())
                                 .build())
                         .collect(Collectors.toList());
 
