@@ -2,6 +2,7 @@ package com.core.attendance.controller;
 
 import com.core.attendance.AttendanceMapper;
 import com.core.attendance.entity.Attendance;
+import com.core.attendance.response.MonthlyWorkResponse;
 import com.core.attendance.service.AttendanceService;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
@@ -147,6 +148,14 @@ public class AttendanceController {
         }
 
         return false;
+    }
+
+    @GetMapping("/monthly")
+    public ResponseEntity getMonthlyAttendance(@RequestParam int year,
+                                               @RequestParam int month,
+                                               @RequestParam Long employeeId) {
+        List<MonthlyWorkResponse> statistics = attendanceService.getMonthlyAttendanceStatistics(employeeId, year, month);
+        return ResponseEntity.ok(statistics);
     }
 
 }

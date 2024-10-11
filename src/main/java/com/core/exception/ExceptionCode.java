@@ -4,7 +4,6 @@ import lombok.Getter;
 
 public enum ExceptionCode {
     INVALID_SORT_FIELD(400,"Invalid Sort Field" ),
-    INVALID_REQUEST(400, "Invalid request" ),
     APPROVAL_NOT_FOUND(404, "Approval Not Found"),
     WORKFLOW_NOT_FOUND(404, "Workflow Not Found" ),
     TEMPLATE_NAME_ALREADY_EXISTS(409, "Template Name Already Exists" ),
@@ -20,7 +19,8 @@ public enum ExceptionCode {
     DO_NOT_HAVE_PERMISSION(403,"You do not have permission to delete" ),
     CAN_NOT_FIND_ATTENDANCE(404, "have no record of going to work" ),
     NOT_ALLOWED_IP(403, "Not Allowed IP address" ),
-    TIME_NOT_NEGATIVE(409,  "Check-out time is earlier than check-in time");
+    TIME_NOT_NEGATIVE(409,  "Check-out time is earlier than check-in time"),
+    CAN_NOT_WORK_IN(409, "You cannot come to work in duplicate" );
 
     @Getter
     private int status;
