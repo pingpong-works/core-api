@@ -31,8 +31,12 @@ public class DocumentDto {
     @Getter
     @NoArgsConstructor
     public static class Patch {
+        @Setter
+        private Long id;
+        private Long workflowId;
         private String title;
         private String content;
+        private Map<String,Object> customFields;
     }
 
     @Getter

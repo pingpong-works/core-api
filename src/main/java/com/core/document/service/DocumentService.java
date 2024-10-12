@@ -19,11 +19,16 @@ import com.core.workflow.entity.Workflow;
 import com.core.workflow.repository.WorkflowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -105,7 +110,72 @@ public class DocumentService {
 
     public Document updateDocument(Document document) {
 
-        return documentRepository.save(document);
+        Document findDocument = findVerifiedDocument(document.getId());
+
+        // Workflow 업데이트
+        Optional.ofNullable(document.getWorkflow())
+                .ifPresent(newWorkflow -> {
+                    Workflow existingWorkflow = findDocument.getWorkflow();
+                    if (existingWorkflow != null) {
+                        // 기존 approvals 컬렉션 업데이트
+                        List<Approval> existingApprovals = existingWorkflow.getApprovals();
+
+                        // 새로운 Approval들의 ID 수집
+                        Set<Long> newApprovalIds = newWorkflow.getApprovals().stream()
+                                .filter(approval -> approval.getId() != null)
+                                .map(Approval::getId)
+                                .collect(Collectors.toSet());
+
+                        // 기존 Approval 중에서 새로운 Approval에 없는 것들을 제거
+                        existingApprovals.removeIf(approval -> !newApprovalIds.contains(approval.getId()));
+
+                        // 새로운 Approval 추가 또는 기존 Approval 업데이트
+                        for (Approval approval : newWorkflow.getApprovals()) {
+                            if (approval.getId() == null) {
+                                // 새로운 Approval인 경우
+                                approval.setWorkflow(existingWorkflow);
+                                existingApprovals.add(approval);
+                            } else {
+                                // 기존 Approval인 경우 필요한 필드 업데이트
+                                Approval existingApproval = existingApprovals.stream()
+                                        .filter(a -> a.getId().equals(approval.getId()))
+                                        .findFirst()
+                                        .orElseThrow(() -> new BusinessLogicException(ExceptionCode.APPROVAL_NOT_FOUND));
+                                // 필요한 필드 업데이트
+                            }
+                        }
+
+                        // currentStep 등 다른 속성 업데이트
+                        existingWorkflow.setCurrentStep(newWorkflow.getCurrentStep());
+
+                    } else {
+                        // 새로운 Workflow 설정
+                        Workflow findWorkflow = workflowRepository.findById(document.getWorkflow().getId())
+                                .orElseThrow(() -> new BusinessLogicException(ExceptionCode.WORKFLOW_NOT_FOUND));
+
+                        EmployeeData employee = verifiedEmployee(findDocument.getEmployeeId());
+
+                        // 결재라인에 담당자 추가
+                        Workflow addApproval = insertAuthor(findWorkflow, employee.getEmployeeId());
+                        findDocument.setWorkflow(addApproval);
+                    }
+                });
+
+        // 기타 필드 업데이트
+        Optional.ofNullable(document.getTitle())
+                .ifPresent(findDocument::setTitle);
+
+        Optional.ofNullable(document.getContent())
+                .ifPresent(findDocument::setContent);
+
+        Optional.ofNullable(document.getCustomFields())
+                .ifPresent(findDocument::setCustomFields);
+
+        // DocumentCode 및 상태 업데이트
+        findDocument.setDocumentCode(createdDocumentCode(findDocument));
+        findDocument.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
+
+        return documentRepository.save(findDocument);
     }
 
     // 개별 조회

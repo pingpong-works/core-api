@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 import javax.validation.constraints.Positive;
+import javax.ws.rs.Path;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -48,9 +49,10 @@ public class DocumentController {
         return new ResponseEntity(mapper.documentToResponse(document), HttpStatus.OK);
     }
 
+    // 임시저장 후 제출
     @PatchMapping("/{documentId}")
-    public ResponseEntity patchDocument (@RequestBody DocumentDto.Patch patchDto) {
-
+    public ResponseEntity patchDocument (@PathVariable("documentId") Long documentId, @RequestBody DocumentDto.Patch patchDto) {
+        patchDto.setId(documentId);
         Document document = service.updateDocument(mapper.patchDtoToDocument(patchDto));
 
         return new ResponseEntity(mapper.documentToResponse(document), HttpStatus.OK);
