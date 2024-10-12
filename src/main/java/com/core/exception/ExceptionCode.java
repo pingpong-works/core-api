@@ -20,7 +20,8 @@ public enum ExceptionCode {
     CAN_NOT_FIND_ATTENDANCE(404, "have no record of going to work" ),
     NOT_ALLOWED_IP(403, "Not Allowed IP address" ),
     TIME_NOT_NEGATIVE(409,  "Check-out time is earlier than check-in time"),
-    CAN_NOT_WORK_IN(409, "You cannot come to work in duplicate" );
+    CAN_NOT_WORK_IN(409, "You cannot come to work in duplicate" ),
+    WORKFLOW_ALREADY_EXISTS(409, "Workflow Already Exists" );
 
     @Getter
     private int status;

@@ -99,7 +99,19 @@ public interface DocumentMapper {
     }
 
 
-    Document patchDtoToDocument(DocumentDto.Patch patchDto);
+    default Document patchDtoToDocument(DocumentDto.Patch patchDto) {
+
+        Workflow workflow = new Workflow();
+        workflow.setId(patchDto.getWorkflowId());
+
+        Document.DocumentBuilder document = Document.builder();
+        document.id(patchDto.getId());
+        document.workflow(workflow);
+        document.title(patchDto.getTitle());
+        document.content(patchDto.getContent());
+        document.customFields(patchDto.getCustomFields());
+        return document.build();
+    }
 
     List<DocumentDto.Response> documentsToResponses(List<Document> documents);
 }
