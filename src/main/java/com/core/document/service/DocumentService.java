@@ -175,6 +175,15 @@ public class DocumentService {
         findDocument.setDocumentCode(createdDocumentCode(findDocument));
         findDocument.setDocumentStatus(Document.DocumentStatus.IN_PROGRESS);
 
+        //전체 승인자에게 알림 전송
+        findDocument.getWorkflow().getApprovals().forEach(approval -> {
+            approvalProducer.sendApprovalNotification(
+                    approval.getEmployeeId(),
+                    String.format("전자결재 문서[%s] 가 도착했습니다.", document.getDocumentCode()),
+                    approval.getId()
+            );
+        });
+
         return documentRepository.save(findDocument);
     }
 
