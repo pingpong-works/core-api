@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MonthlyWorkResponse {
-    private int month;
+public class WeeklyWorkResponse {
+    private int week;
     private Double totalWorkingTime;
 }

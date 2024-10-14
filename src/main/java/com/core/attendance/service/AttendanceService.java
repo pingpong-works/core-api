@@ -2,8 +2,8 @@ package com.core.attendance.service;
 
 import com.core.attendance.entity.Attendance;
 import com.core.attendance.repository.AttendanceRepository;
-import com.core.attendance.response.AttendanceResponse;
 import com.core.attendance.response.MonthlyWorkResponse;
+import com.core.attendance.response.WeeklyWorkResponse;
 import com.core.client.auth.AuthServiceClient;
 import com.core.client.auth.EmployeeData;
 import com.core.client.auth.UserResponse;
@@ -99,11 +99,16 @@ public class AttendanceService {
         return attendanceRepository.findAll(pageable);
     }
 
-    public List<MonthlyWorkResponse> getMonthlyAttendanceStatistics(Long employeeId, int year, int month) {
-        //검증된 직원인지 확인
+    //월별 근무시간 통계
+    public List<MonthlyWorkResponse> getMonthlyAttendanceStatistics(Long employeeId, int year) {
         verifiedEmployee(employeeId);
+        return attendanceRepository.findTotalWorkingTimePerEmployeePerMonth(employeeId, year);
+    }
 
-        return attendanceRepository.findTotalWorkingTimePerEmployeeForMonth(employeeId, year, month);
+    //주별 근무시간 통계
+    public List<WeeklyWorkResponse> getWeeklyAttendanceStatistics(Long employeeId, int year) {
+        verifiedEmployee(employeeId);
+        return attendanceRepository.findTotalWorkingTimePerEmployeePerWeek(employeeId, year);
     }
 
     private boolean isVerifiedIp(String ipAddress) {
@@ -126,10 +131,12 @@ public class AttendanceService {
         return employee;
     }
 
+
+    // feign 통신 Response
     private UserResponse getEmployee(Long employeeId) {
         UserResponse response = authServiceClient.getEmployeeByIdForUser(employeeId);
 
-        log.debug("Response from Feign: {}", response);
+        log.debug("Feign Response: {}", response);
 
         if(response == null || response.getData() == null) {
             throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
@@ -138,6 +145,7 @@ public class AttendanceService {
         return response;
     }
 
+    // 근무시간 계산
     private double calculateWorkingTime (LocalDateTime in, LocalDateTime out) {
         Duration duration = Duration.between(in, out);
         if (duration.isNegative()) {
