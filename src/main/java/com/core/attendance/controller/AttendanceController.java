@@ -3,6 +3,7 @@ package com.core.attendance.controller;
 import com.core.attendance.AttendanceMapper;
 import com.core.attendance.entity.Attendance;
 import com.core.attendance.response.MonthlyWorkResponse;
+import com.core.attendance.response.WeeklyWorkResponse;
 import com.core.attendance.service.AttendanceService;
 import com.core.exception.BusinessLogicException;
 import com.core.exception.ExceptionCode;
@@ -150,12 +151,23 @@ public class AttendanceController {
         return false;
     }
 
-    @GetMapping("/monthly")
-    public ResponseEntity getMonthlyAttendance(@RequestParam int year,
-                                               @RequestParam int month,
-                                               @RequestParam Long employeeId) {
-        List<MonthlyWorkResponse> statistics = attendanceService.getMonthlyAttendanceStatistics(employeeId, year, month);
-        return ResponseEntity.ok(statistics);
+    @GetMapping("/stats")
+    public ResponseEntity<?> getAttendanceStatistics(@RequestParam int year,
+                                                     @RequestParam String sort,
+                                                     @RequestParam Long employeeId) {
+        // sort 일치하지 않을 때 예외 처리
+        if (!sort.equalsIgnoreCase("monthly") && !sort.equalsIgnoreCase("weekly")) {
+            new BusinessLogicException(ExceptionCode.INVALID_SORT_FIELD);
+        }
+
+        //sort 가 monthly 일 때, weekly 일 때
+        if (sort.equalsIgnoreCase("monthly")) {
+            List<MonthlyWorkResponse> statistics = attendanceService.getMonthlyAttendanceStatistics(employeeId, year);
+            return ResponseEntity.ok(statistics);
+        } else {
+            List<WeeklyWorkResponse> statistics = attendanceService.getWeeklyAttendanceStatistics(employeeId, year);
+            return ResponseEntity.ok(statistics);
+        }
     }
 
 }
