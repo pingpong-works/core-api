@@ -57,7 +57,8 @@ public class DocsTypeController {
 
     @GetMapping
     public ResponseEntity getDocsTypes (@Positive @RequestParam int page, @Positive @RequestParam int size,
-                                        @RequestParam String sort, @RequestParam String direction) {
+                                        @RequestParam(required = false) String sort,
+                                        @RequestParam(required = false) String direction) {
 
         String criteria = "id";
 
@@ -70,7 +71,7 @@ public class DocsTypeController {
             }
         }
 
-        Page<DocumentType> typePage = service.findDocsTypes(page -1 , size, sort, direction );
+        Page<DocumentType> typePage = service.findDocsTypes(page -1 , size, criteria, direction );
         List<DocsTypeDto.Response> typeResponseList = mapper.docsTypesToResponses(typePage.getContent());
 
         return new ResponseEntity<>(

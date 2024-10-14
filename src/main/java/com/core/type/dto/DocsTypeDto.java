@@ -43,4 +43,5 @@ public class DocsTypeDto {
         private String type;
         private DocsTemplateDto.Response documentTemplate;
     }
+
 }
