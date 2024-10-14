@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -24,7 +26,7 @@ public class DocsTemplateService {
 
     public DocumentTemplate createTemplate(DocumentTemplate template) {
         verifyExistsTemplateName(template.getTemplateName());
-
+        template.setCreatedAt(LocalDateTime.now());
         return repository.save(template);
     }
 
@@ -57,6 +59,7 @@ public class DocsTemplateService {
             DocumentTemplate newTemplate = DocumentTemplate.builder()
                     .templateName(template.getTemplateName() != null ? template.getTemplateName() : oldTemplate.getTemplateName())
                     .version(oldTemplate.getVersion() + 1)
+                    .modifiedAt(LocalDateTime.now())
                     .fields(new ArrayList<>()) // 새로운 필드 리스트 생성
                     .build();
 

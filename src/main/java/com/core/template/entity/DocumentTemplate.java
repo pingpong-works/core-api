@@ -27,7 +27,7 @@ public class DocumentTemplate {
     @OneToMany(mappedBy = "documentTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateField> fields;
 
-    @Column
+    @Column(updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column
