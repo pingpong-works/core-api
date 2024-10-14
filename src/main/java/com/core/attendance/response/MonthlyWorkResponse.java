@@ -10,6 +10,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MonthlyWorkResponse {
-    private Long employeeId;
+    private int month;
     private Double totalWorkingTime;
 }
