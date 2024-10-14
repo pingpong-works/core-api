@@ -1,6 +1,5 @@
 package com.core.type.mapper;
 
-import com.core.template.dto.FieldDto;
 import com.core.template.entity.DocumentTemplate;
 import com.core.template.entity.TemplateField;
 import com.core.type.dto.DocsTypeDto;
@@ -44,7 +43,6 @@ public interface DocsTypeMapper {
                 .documentTemplate(template)
                 .build();
     }
-
 
     DocumentType patchDtoToDocsType(DocsTypeDto.Patch patchDto);
     DocsTypeDto.Response docsTypeToResponse(DocumentType type);

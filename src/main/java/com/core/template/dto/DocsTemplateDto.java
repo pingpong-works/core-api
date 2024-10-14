@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class DocsTemplateDto {
@@ -26,6 +28,15 @@ public class DocsTemplateDto {
         private Long id;
         private String templateName;
         private int version;
+        private LocalDateTime createdAt;
+        private LocalDateTime modifiedAt;
         private List<FieldDto.Response> fields;
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class PostResponse {
+        private Long id;
+        private int version;
     }
 }

@@ -39,9 +39,7 @@ public class DocsTemplateController {
 
         DocumentTemplate createdTemplate = service.createTemplate(mapper.postDtoToDocsTemplate(postDto));
 
-        URI location = UriCreator.createUri(TEMPLATE_DEFAULT_URL, createdTemplate.getId());
-
-        return ResponseEntity.created(location).build();
+        return new ResponseEntity(mapper.docsTypeToPostResponse(createdTemplate),HttpStatus.CREATED);
     }
 
     @PatchMapping("/{template-id}")

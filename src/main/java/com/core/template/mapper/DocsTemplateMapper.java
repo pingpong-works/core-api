@@ -30,6 +30,8 @@ public interface DocsTemplateMapper {
         return documentTemplate;
     }
 
+    DocsTemplateDto.PostResponse docsTypeToPostResponse(DocumentTemplate documentTemplate);
+
     DocumentTemplate patchDtoToDocsTemplate(DocsTemplateDto.Patch patchDto);
     DocsTemplateDto.Response templateToResponse(DocumentTemplate template);
     List<DocsTemplateDto.Response> templatesToResponses(List<DocumentTemplate> templates);
