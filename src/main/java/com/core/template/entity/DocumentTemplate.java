@@ -3,6 +3,7 @@ package com.core.template.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -25,5 +26,12 @@ public class DocumentTemplate {
 
     @OneToMany(mappedBy = "documentTemplate", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TemplateField> fields;
+
+    @Column
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column
+    private LocalDateTime modifiedAt;
+
 
 }

@@ -57,6 +57,8 @@ public interface DocumentMapper {
                                 document.getDocumentType().getDocumentTemplate().getId(),
                                 document.getDocumentType().getDocumentTemplate().getTemplateName(),
                                 document.getDocumentType().getDocumentTemplate().getVersion(),
+                                document.getDocumentType().getDocumentTemplate().getCreatedAt(),
+                                document.getDocumentType().getDocumentTemplate().getModifiedAt(),
                                 document.getDocumentType().getDocumentTemplate().getFields().stream()
                                         .map(field -> new FieldDto.Response(
                                                 field.getId(),
