@@ -54,7 +54,8 @@ public class DocsTemplateService {
         }
 
         // 필드가 변경되었거나 템플릿 이름이 변경되었을 때만 새 버전 생성
-        if (!oldTemplate.getTemplateName().equals(template.getTemplateName()) || isFieldsChanged) {
+        if (!oldTemplate.getTemplateName().equals(template.getTemplateName()) || isFieldsChanged
+        || oldTemplate.getFields().size() != template.getFields().size()) {
             // 새 버전 생성
             DocumentTemplate newTemplate = DocumentTemplate.builder()
                     .templateName(template.getTemplateName() != null ? template.getTemplateName() : oldTemplate.getTemplateName())
