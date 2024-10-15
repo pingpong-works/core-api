@@ -23,7 +23,7 @@ public class Workflow {
     private Document document;
 
     @Column
-    private int currentStep;
+    private int currentStep = 1;
 
     @OneToMany(mappedBy = "workflow", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Approval> approvals = new ArrayList<>();

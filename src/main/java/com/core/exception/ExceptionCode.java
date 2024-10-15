@@ -21,7 +21,9 @@ public enum ExceptionCode {
     NOT_ALLOWED_IP(403, "Not Allowed IP address" ),
     TIME_NOT_NEGATIVE(409,  "Check-out time is earlier than check-in time"),
     CAN_NOT_WORK_IN(409, "You cannot come to work in duplicate" ),
-    WORKFLOW_ALREADY_EXISTS(409, "Workflow Already Exists" );
+    WORKFLOW_ALREADY_EXISTS(409, "Workflow Already Exists" ),
+    CAN_NOT_FIND_DATE(404, "Date Not Found" ),
+    UNSUPPORTED_DOCUMENT_TYPE(409,"Unsupported Document Type" );
 
     @Getter
     private int status;
