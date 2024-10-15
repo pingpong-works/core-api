@@ -61,6 +61,7 @@ public class DocsTemplateService {
                     .templateName(template.getTemplateName() != null ? template.getTemplateName() : oldTemplate.getTemplateName())
                     .version(oldTemplate.getVersion() + 1)
                     .modifiedAt(LocalDateTime.now())
+                    .createdAt(oldTemplate.getCreatedAt())
                     .fields(new ArrayList<>()) // 새로운 필드 리스트 생성
                     .build();
 
