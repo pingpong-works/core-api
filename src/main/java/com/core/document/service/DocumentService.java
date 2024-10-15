@@ -19,11 +19,9 @@ import com.core.workflow.entity.Workflow;
 import com.core.workflow.repository.WorkflowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -108,6 +106,7 @@ public class DocumentService {
         return documentRepository.save(document);
     }
 
+    // 임시저장 후 제출
     public Document updateDocument(Document document) {
 
         Document findDocument = findVerifiedDocument(document.getId());
@@ -187,6 +186,17 @@ public class DocumentService {
         return documentRepository.save(findDocument);
     }
 
+    // document 상태 수정
+    public Document updateFieldDocument(Document document) {
+
+        Document findDocument = findVerifiedDocument(document.getId());
+
+        findDocument.setDocumentStatus(document.getDocumentStatus());
+
+        return documentRepository.save(findDocument);
+    }
+
+
     // 개별 조회
     public Document findDocument(Long documentId) {
         return findVerifiedDocument(documentId);
@@ -218,11 +228,13 @@ public class DocumentService {
         documentRepository.delete(findDocument);
     }
 
+    //검증된 문서인지 확인
     private Document findVerifiedDocument (Long documentId) {
         return documentRepository.findById(documentId)
                 .orElseThrow(() -> new BusinessLogicException(ExceptionCode.DOCUMENT_NOT_FOUND));
     }
 
+    //
     public UserResponse getEmployee(Long employeeId) {
         UserResponse response = authServiceClient.getEmployeeByIdForUser(employeeId);
 
