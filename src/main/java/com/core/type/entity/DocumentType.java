@@ -22,6 +22,9 @@ public class DocumentType {
     private String type; //문서 유형이름
     //기안서, 연차/휴가 신청서, 특근신청서, 출장신청서, 업무보고서, 경비처리 신청서, 사내 제안서등
 
+    @Column
+    private Boolean isVisible = Boolean.FALSE;
+
     @OneToMany(mappedBy = "documentType")
     private List<Document> documents; //문서에 해당하는 템플릿 (하나만)
 

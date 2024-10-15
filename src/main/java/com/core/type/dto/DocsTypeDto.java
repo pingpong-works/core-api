@@ -32,7 +32,7 @@ public class DocsTypeDto {
     public static class Patch {
         @Setter
         private Long id;
-       // private Long templateId;
+        private Boolean isVisible;
         private String type;
     }
 
@@ -40,6 +40,7 @@ public class DocsTypeDto {
     @Getter
     public static class Response {
         private Long id;
+        private Boolean isVisible;
         private String type;
         private DocsTemplateDto.Response documentTemplate;
     }

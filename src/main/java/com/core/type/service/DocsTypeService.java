@@ -8,6 +8,7 @@ import com.core.type.entity.DocumentType;
 import com.core.type.repository.DocsTypeRepository;
 import com.core.utils.PageableCreator;
 import lombok.RequiredArgsConstructor;
+import org.apache.kafka.common.quota.ClientQuotaAlteration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class DocsTypeService {
         DocumentTemplate findDocsTemplate = docsTemplateService
                 .findTemplate(docsType.getDocumentTemplate().getId());
         docsType.setDocumentTemplate(findDocsTemplate);
+        docsType.setIsVisible(Boolean.FALSE);
 
         return repository.save(docsType);
     }
@@ -40,6 +42,9 @@ public class DocsTypeService {
                     existsByType(type);
                     findDocsType.setType(type);
                 });
+
+        Optional.ofNullable(docsType.getIsVisible())
+                .ifPresent(findDocsType::setIsVisible);
 
         return repository.save(findDocsType);
     }
