@@ -11,4 +11,5 @@ public class EmployeeData {
     private String name;
     private String departmentName;
     private Long departmentId;
+    private String email;
 }

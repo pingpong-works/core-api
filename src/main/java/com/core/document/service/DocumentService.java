@@ -2,6 +2,7 @@ package com.core.document.service;
 
 import com.core.approval.entity.Approval;
 import com.core.approval.repository.ApprovalRepository;
+import com.core.client.auth.AdminInfo;
 import com.core.client.auth.AuthServiceClient;
 import com.core.client.auth.EmployeeData;
 import com.core.client.auth.UserResponse;
@@ -213,16 +214,18 @@ public class DocumentService {
     // 개별 삭제 (관리자 또는 임시저장은 본인만)
     public void deleteDocument(Long documentId, Long employeeId) {
         Document findDocument = findVerifiedDocument(documentId);
-
-        if(!findDocument.getDocumentStatus().equals(Document.DocumentStatus.DRAFT)) {
-           throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
-        }
-
         EmployeeData employee = verifiedEmployee(employeeId);
 
-        //관리자가 아닐 경우 본인이 작성한 글만 삭제 가능
-        if(findDocument.getEmployeeId() != employee.getEmployeeId()) {
-            throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
+        boolean isAdmin = AdminInfo.ADMIN_EMAIL.equalsIgnoreCase(employee.getEmail());
+        boolean isAuthor = findDocument.getEmployeeId().equals(employee.getEmployeeId());
+        boolean isDraft = findDocument.getDocumentStatus().equals(Document.DocumentStatus.DRAFT);
+
+        if (!isAdmin) {
+
+            // 관리자가 아니라면 임시저장만 삭제 가능
+            if (!(isAuthor && isDraft)) {
+                throw new BusinessLogicException(ExceptionCode.DO_NOT_HAVE_PERMISSION);
+            }
         }
 
         documentRepository.delete(findDocument);
@@ -255,7 +258,7 @@ public class DocumentService {
         EmployeeData employee = employeeResponse.getData();  // 내부의 data 필드 접근
 
         // null 체크 및 필수 필드 확인
-        if (employee == null || employee.getName() == null || employee.getEmployeeId() == null || employee.getDepartmentName() == null) {
+        if (employee == null || employee.getName() == null || employee.getEmployeeId() == null /*|| employee.getDepartmentName() == null*/) {
             throw new BusinessLogicException(ExceptionCode.EMPLOYEE_NOT_FOUND);
         }
 
